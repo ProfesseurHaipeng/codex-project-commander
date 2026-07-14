@@ -77,8 +77,9 @@ After decomposing and recording the mission:
 6. On any employee completion, validate the reported evidence immediately.
 7. If validation passes, mark the task `done`, release its ownership, and recompute dependencies.
 8. Immediately assign the highest-value compatible `ready` task to that employee or another idle suitable employee.
-9. If validation fails, move the task to `review`, `blocked`, or `stalled`, record the evidence, and replan within the retry cap.
-10. Continue until every required task is `done`, `cancelled` by authority, or explicitly blocked on the user or external state.
+9. Run the [idle-capacity audit](completion-watchdog.md#idle-capacity-audit) for other apparently idle employees; dispatch real compatible work or mark them resting.
+10. If validation fails, move the task to `review`, `blocked`, or `stalled`, record the evidence, and replan within the retry cap.
+11. Continue until every required task is `done`, `cancelled` by authority, or explicitly blocked on the user or external state.
 
 Do not wait for the slowest employee before continuing unrelated work. Wait for all current tasks only when a named downstream task genuinely depends on all of them.
 

@@ -21,8 +21,10 @@ States: `backlog`, `ready`, `running`, `blocked`, `review`, `done`, `cancelled`,
 
 ## Employee activity
 
-| Employee | Department/role | Current task | State | Last meaningful update | Last processed report | Blocker/retry | Next compatible task |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+Employee states: `working`, `review`, `blocked`, `stalled`, `resting`. Resting requires a reason and is not laziness or stalled work.
+
+| Employee | Department/role | Current task | State | Last meaningful update | Last processed report | Idle finding/rest reason | Blocker/retry | Next compatible task |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Decisions and reusable evidence
 
