@@ -48,7 +48,7 @@ ASSET_EXTENSIONS = {
 }
 
 KEY_NAMES = {
-    "agents.md", "agents.override.md", "readme", "readme.md", "license", "license.md",
+    "readme", "readme.md", "license", "license.md",
     "package.json", "pnpm-lock.yaml", "yarn.lock", "package-lock.json", "pyproject.toml",
     "requirements.txt", "poetry.lock", "cargo.toml", "cargo.lock", "go.mod", "go.sum",
     "pom.xml", "build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts",
@@ -94,8 +94,7 @@ def classify(path: Path) -> str:
 
 
 def is_key_file(path: Path) -> bool:
-    normalized = path.as_posix().lower()
-    return path.name.lower() in KEY_NAMES or normalized.endswith("/.codex/config.toml")
+    return path.name.lower() in KEY_NAMES
 
 
 def collect(root: Path, include_all: bool, limit: int) -> dict:

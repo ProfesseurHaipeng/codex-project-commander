@@ -112,7 +112,7 @@ Count delivery employees separately from the mandatory Token Governance employee
 | Balanced | 2–4 employees | separate planning/production/validation where useful |
 | Efficiency | 3–6 employees | use more distinct outcome lanes, but only for ready, non-conflicting work |
 
-Roster size is a ceiling guided by useful work, not a quota. WIP limits in the continuous-dispatch protocol still control simultaneous missions. A larger roster may include standby employees with valuable retained context.
+Roster size is a ceiling, not a target. WIP limits in the continuous-dispatch protocol control simultaneous missions. Do not create extra task windows as placeholders; when no compatible ready work exists, leave the production lane inactive.
 
 ## Reconcile long-running projects
 

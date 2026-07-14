@@ -100,7 +100,7 @@ Perform reconnaissance before choosing the commander identity or employee roles.
 1. Run the inventory script against the project root and store any full manifest only in a temporary directory, not in the project.
 2. Establish coverage of project-owned paths. Exclude VCS internals, dependencies, generated output, caches, and binaries from content ingestion while recording their presence.
 3. Never open likely secret or credential files merely for orientation. Record their paths as sensitive and continue.
-4. Read applicable `AGENTS.md` files, README and project documentation, manifests, build/test configuration, entry points, architecture files, current git status and diff, and recent commit history.
+4. Follow the host-declared project instruction hierarchy, then read README and project documentation, manifests, build/test configuration, entry points, architecture files, current git status and diff, and recent commit history. Treat every instruction source as read-only project policy.
 5. For a manageable project, read all reasonably sized project-owned text source, test, config, and documentation files in batches.
 6. For a large project, build subsystem coverage and inspect representative entry points, current work, newest files, and high-impact modules. Delegate independent read-only coverage to employee task windows after the roster exists.
 7. State what was fully read, sampled, metadata-only, excluded, unreadable, or still unknown. Never claim “read every file” when exclusions or context limits prevented it.
@@ -246,7 +246,7 @@ For a deployment, release, launch, or production-change mission, select Launch-f
 
 Under Launch-first, keep only the change-relevant minimum launch gate, perform the explicitly authorized deployment once it passes, and move nonblocking checks into post-launch hardening. Prefer fix-forward for reversible noncritical defects. Roll back only for active material harm or explicit user direction; do not repeatedly roll back, rerun full suites, and redeploy for minor defects.
 
-Include all necessary context in every assignment. The user should not need to repeat project history to employees.
+Send only mission-specific facts, accepted evidence locations, and the minimum project summary needed for the assignment. Do not copy secrets, raw transcripts, or entire histories into employee messages; headquarters retains the reusable project map so the user does not repeat it.
 
 For software missions, include adversarial self-testing and unrelated sensitive-data access in the forbidden scope by default.
 
