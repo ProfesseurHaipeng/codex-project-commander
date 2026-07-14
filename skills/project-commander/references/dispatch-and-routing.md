@@ -124,6 +124,7 @@ Report format: EMPLOYEE REPORT below.
 
 ```text
 EMPLOYEE REPORT
+Task ID: <stable ledger task ID>
 Status: complete | blocked | needs-review
 Outcome: <one concise paragraph>
 Changed: <files, artifacts, or external state; write none if read-only>
@@ -153,13 +154,15 @@ Next report: <completion event or meaningful checkpoint>
 
 ## Continuous dispatch handoff
 
-Assign only one active mission to each employee. When a report arrives:
+Assign only one active mission to each employee. When the headquarters watchdog discovers an unprocessed report:
 
 1. headquarters validates the result;
 2. headquarters updates `.codex/project-commander/TASK_LEDGER.md`;
 3. accepted work releases its owned scope and unlocks dependent tasks;
 4. headquarters immediately sends the highest-value compatible ready mission to that employee or another suitable idle employee;
 5. headquarters does not wait for unrelated employees to finish.
+
+An employee does not need and cannot push its report into the commander window. It must make the required report its final response, end the current turn, and wait for the commander heartbeat to read it and re-dispatch. Headquarters deduplicates reports under [the completion-watchdog protocol](completion-watchdog.md).
 
 Use the Economy, Balanced, or Efficiency mode WIP target defined in [continuous-dispatch.md](continuous-dispatch.md). A mode changes scheduling posture, not the mission contract or safety boundary.
 
