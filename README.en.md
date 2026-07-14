@@ -29,6 +29,7 @@ Long-running projects become difficult to coordinate when research, implementati
 - Build an evidence-backed map of project-owned files, Git state, documentation, source, tests, and recent work.
 - Infer a project-specific commander archetype for product development, content operations, data analysis, film production, business operations, or Codex skill development.
 - Create `.codex/project-commander/ORG_CHART.md` with one governance department and project-specific delivery departments derived from real deliverables.
+- Optionally use a modern Three Departments and Six Ministries profile with proposal, independent review, approved execution, and functional ministry pools instead of mechanically creating nine windows.
 - Give every employee window one department, primary accountable outcome, input/output contract, writable scope, and validation responsibility.
 - Reuse and organize suitable existing task windows without destroying historical tasks.
 - Create only the missing employee task windows under the same local project.
@@ -87,7 +88,14 @@ my project commander, balanced mode
 my project commander, efficiency mode
 ```
 
+For complex or high-risk projects, select the governance profile too:
+
+```text
+my project commander, efficiency mode, three-departments six-ministries structure
+```
+
 When headquarters is already active, send `economy mode`, `balanced mode`, `normal mode`, or `efficiency mode` alone to switch modes without creating another commander.
+A profile phrase alone reconciles the current organization without creating another commander or duplicate employees.
 
 Natural-language invocation uses implicit skill matching and is not guaranteed when many skills are installed. For a durable command mapping, merge [AGENTS.command-bridge.en.md](examples/AGENTS.command-bridge.en.md) into `~/.codex/AGENTS.md`.
 
@@ -155,6 +163,14 @@ Commander | project
 Departments and roles follow the actual deliverables. A software project may use product planning, architecture and implementation, and quality and release; content may use research and strategy, editorial production, and visual/distribution QA; data may use data quality, analysis/modeling, and reporting/validation.
 
 Headquarters manages employees directly and does not create department-manager windows by default. Every work item belongs to one department and one production owner. Headquarters mediates cross-department handoffs using accepted outputs and compact evidence. The organization chart defines who owns what; the task ledger tracks what is happening now.
+
+### Optional: modern Three Departments and Six Ministries governance
+
+When selected, headquarters also creates `.codex/project-commander/GOVERNANCE.md`. The Secretariat function turns the goal into a reviewable proposal, the Chancellery independently returns `APPROVED`, `RETURNED`, or `EVIDENCE NEEDED`, and State Affairs dispatches only approved work into six functional pools: organization, Token/resources, standards/communication, production, quality/risk, and engineering/infrastructure.
+
+These functions are foldable, not nine fixed windows. A small project may map them onto 2–3 delivery employees, while high-risk proposal authors remain separate from final reviewers and producers remain separate from independent quality adjudicators. The unique Employee00 maps to the Revenue function and stays read-only.
+
+The design adapts dependency/conflict queues from [CCPM](https://github.com/automazeio/ccpm), context isolation from [TDD Multi-Agent Orchestration](https://github.com/glebis/claude-skills/blob/main/tdd/SKILL.md), independent evidence gates from [Code Review and Quality](https://github.com/addyosmani/agent-skills/blob/main/skills/code-review-and-quality/SKILL.md), and phase gates plus written handoffs from [Quality Playbook](https://github.com/github/awesome-copilot/blob/main/skills/quality-playbook/SKILL.md).
 
 ## Operating model
 

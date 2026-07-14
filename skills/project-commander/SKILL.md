@@ -1,6 +1,7 @@
 ---
 name: project-commander
-description: Turn a new or long-running local Codex project into a Project Commander organization of named sidebar task-window employees with project-specific departments, non-overlapping roles, a dedicated token-governance employee, a durable organization chart and task ledger, continuous event-driven dispatch, and economy, balanced, or efficiency modes. Use when the user says “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”; when an already-active commander receives “economy mode”, “balanced mode”, “normal mode”, or “efficiency mode”; or when the user asks Codex to inspect an existing project, build an organization structure, organize tasks into employees, reduce repeated token waste, route work across Sol, Terra, and Luna or equivalent supported tiers, pin the commander, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
+description: Turn a new or long-running local Codex project into a commander-led organization of named sidebar task-window employees with distinct departments, one Token Governance employee, a durable organization chart and task ledger, continuous dispatch, operating modes, and an optional modern Three Departments and Six Ministries governance profile. Use for “my project commander”, “project commander”, “commander”, “be the commander”, “start commander”; active-commander mode or profile switches; existing-project onboarding; employee-window organization; Sol/Terra/Luna routing; Token reduction; pinning; validation; and one-headquarters reporting. Employees are persistent project task windows, never subagents.
+license: MIT
 ---
 
 # Project Commander
@@ -26,6 +27,7 @@ Read these resources before acting:
 - [references/token-governance.md](references/token-governance.md) before creating the roster or dispatching work, and whenever repeated reading, duplicate work, or model overuse is suspected.
 - [references/continuous-dispatch.md](references/continuous-dispatch.md) whenever headquarters receives, resumes, monitors, or replans a multi-step mission, or the user selects an operating mode.
 - [references/organization-system.md](references/organization-system.md) after project reconnaissance and before creating, adopting, reorganizing, or reassigning employee task windows.
+- [references/three-departments-six-ministries.md](references/three-departments-six-ministries.md) when the user selects that profile or complex, high-risk work benefits from separate proposal, review, execution, and validation functions.
 
 Use [scripts/project_inventory.py](scripts/project_inventory.py) for a read-only project-wide file inventory when Python is available.
 
@@ -44,6 +46,7 @@ Treat the exact commands “my project commander”, “project commander”, �
 - create or reconcile a project-specific organization chart with departments, distinct role ownership, input/output contracts, and headquarters-mediated handoffs;
 - create or reconcile a local task ledger, run continuous event-driven dispatch, and immediately reuse suitable employees as work becomes ready;
 - use Balanced mode by default, or honor an Economy, Balanced/Normal, or Efficiency mode included with the activation command;
+- when explicitly selected, establish a modern Three Departments and Six Ministries governance record and map proposal, independent review, execution administration, and six functional pools onto the smallest useful roster;
 - rename and pin the calling commander task;
 - keep the user-facing conversation in headquarters.
 
@@ -112,6 +115,8 @@ Follow [the project organization system](references/organization-system.md) befo
 5. Map every task-ledger item to exactly one department and one accountable production employee. Optional reviewers remain read-only and do not share production ownership.
 6. Route all interdepartmental handoffs through headquarters using accepted outputs and concise evidence pointers. Employees do not reorganize or reassign one another.
 7. Scale delivery employees by useful work and operating mode; never create empty departments or filler roles.
+
+When the user selects the Three Departments and Six Ministries profile, also copy or reconcile [assets/GOVERNANCE.template.md](assets/GOVERNANCE.template.md) at `.codex/project-commander/GOVERNANCE.md` and follow [the profile protocol](references/three-departments-six-ministries.md). This is a separation-of-duties and governance-gate model, not nine mandatory windows. Mark unused functions unstaffed and combine compatible functions, while keeping high-risk proposal authors separate from final reviewers and producers separate from independent quality adjudicators.
 
 Keep the organization chart local and untracked by default. Headquarters is its only writer. Do not change `.gitignore`, commit it, or store secrets or raw transcripts without user authorization.
 
@@ -210,6 +215,7 @@ When the user gives headquarters a mission:
 7. Keep integration decisions in headquarters.
 8. Execute small or tightly coupled work directly when delegation would add more coordination than value.
 9. Dispatch independent read-heavy work in parallel and serialize conflicting write-heavy work.
+10. When the Three Departments and Six Ministries profile is active, Secretariat proposes, Chancellery returns `APPROVED`, `RETURNED`, or `EVIDENCE NEEDED`, and State Affairs maps only approved work into ministry functions and dispatch.
 
 Include all necessary context in every assignment. The user should not need to repeat project history to employees.
 
@@ -219,13 +225,13 @@ For every multi-step mission, follow [continuous dispatch and durable task ledge
 
 1. Copy [assets/TASK_LEDGER.template.md](assets/TASK_LEDGER.template.md) to `.codex/project-commander/TASK_LEDGER.md` when no ledger exists.
 2. Record the full objective, completion condition, dependency graph, queue, owners, states, model/reasoning choices, checkpoints, evidence, and next actions before broad dispatch.
-3. Map every task row to the organization chart's department and accountable employee.
+3. Map every task row to the organization chart's department and accountable employee; when the Three Departments and Six Ministries profile is active, also record its functional mapping and governance-gate state.
 4. Keep headquarters as the only ledger writer and reconcile the ledger with project evidence and employee windows whenever the mission resumes.
 5. Keep the ledger local and untracked by default. Do not change `.gitignore` or commit it without user authorization, and never store secrets or raw transcripts.
 6. Default to Balanced mode. Treat `economy mode`, `balanced mode`, `normal mode`, and `efficiency mode` as mode switches for the active commander. A mode-only switch must not create another commander or duplicate employees.
 7. Apply the selected mode's roster ceiling, WIP, routing, and checkpoint posture without weakening authority, file ownership, validation, or stop-loss rules.
 
-Allow combined activation such as `my project commander, efficiency mode`. Record every mode change in the ledger.
+Allow combined activation such as `my project commander, efficiency mode` or `my project commander, efficiency mode, three-departments six-ministries structure`. Each operating-mode or organization-profile phrase may appear at most once. When the active commander receives only a Three Departments and Six Ministries profile phrase, reconcile the existing organization without creating another commander or duplicate employees. Record each change in the ledger and applicable governance record.
 
 ## Run continuous single-line dispatch
 

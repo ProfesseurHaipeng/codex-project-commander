@@ -5,6 +5,7 @@ Commander:
 Archetype:
 Lifecycle stage:
 Operating mode: Balanced
+Organization profile: Standard / Three Departments and Six Ministries
 Updated:
 
 > Headquarters is the only writer. Keep this file local and untracked by default. Store no secrets, raw transcripts, hidden reasoning, or full file contents.
@@ -33,6 +34,11 @@ Commander | project
 
 | Work type/output | Accountable employee | Optional reviewer | Accepted input | Handoff package | Destination |
 | --- | --- | --- | --- | --- | --- |
+
+## Governance-function mapping (Three Departments and Six Ministries only)
+
+| Employee title | Three Departments function | Six Ministries function | Compatibility / independence note |
+| --- | --- | --- | --- |
 
 ## Gaps, overlaps, and organization decisions
 

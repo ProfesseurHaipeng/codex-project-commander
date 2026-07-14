@@ -41,6 +41,7 @@ Convert the objective into a dependency graph. Give every task:
 - department and primary role from `.codex/project-commander/ORG_CHART.md`;
 - one owner or `unassigned`;
 - one state: `backlog`, `ready`, `running`, `blocked`, `review`, `done`, `cancelled`, or `stalled`;
+- one governance-gate state: `not applicable` for the standard profile, or `pending`, `approved`, `returned`, or `evidence needed` for the Three Departments and Six Ministries profile;
 - owned files or scope;
 - model tier, reasoning effort, and budget class;
 - a next meaningful checkpoint;
@@ -48,7 +49,7 @@ Convert the objective into a dependency graph. Give every task:
 
 Keep one active mission per employee. Queue later tasks in the ledger instead of sending several simultaneous assignments to one window. Preserve context by returning related follow-up work to the employee that already knows the subsystem when that does not create a conflict.
 
-Mark a task `ready` only when all dependencies are `done` and its required authority and inputs exist. Treat a real integration or dependency barrier as a barrier; do not invent a global batch barrier.
+Mark a task `ready` only when all dependencies are `done`, its required authority and inputs exist, and any applicable governance gate is `approved`. Never dispatch `returned` or `evidence needed` work. Treat a real integration or dependency barrier as a barrier; do not invent a global batch barrier.
 
 ## Select an operating mode
 
