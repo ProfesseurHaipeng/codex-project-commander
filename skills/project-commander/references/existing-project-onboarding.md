@@ -93,15 +93,16 @@ Do not archive, delete, merge, replace, or take over tasks during automatic reco
 2. Inventory files and current git state.
 3. Read project instructions, orientation docs, manifests, and current work.
 4. Infer the commander charter.
-5. Rename and resolve headquarters, then pin it.
-6. Inventory and read relevant task windows.
-7. Reuse or create the single Token Governance employee before other expensive dispatches.
-8. Ask Token Governance to identify duplicate roles and propose the lowest sufficient model tier for each remaining role; headquarters applies the decision.
-9. Reuse, adopt, or create the smallest useful deliverable-owning roster.
-10. Settle titles after registration turns complete.
-11. Assign model, reasoning, token budget, and stop-loss baselines with `ROLE CONFIGURATION` follow-ups.
-12. Verify exact titles, project paths, role acknowledgements, and pin success.
-13. Report the charter, file-coverage ledger, roster, model profiles, token controls, and exclusions.
+5. Read and reconcile `.codex/project-commander/TASK_LEDGER.md`, or create it from the bundled template when work is multi-step.
+6. Rename and resolve headquarters, then pin it.
+7. Inventory and read relevant task windows.
+8. Reuse or create the single Token Governance employee before other expensive dispatches.
+9. Ask Token Governance to identify duplicate roles and propose the lowest sufficient model tier for each remaining role; headquarters applies the decision.
+10. Reuse, adopt, or create the smallest useful deliverable-owning roster.
+11. Settle titles after registration turns complete.
+12. Assign model, reasoning, token budget, and stop-loss baselines with `ROLE CONFIGURATION` follow-ups.
+13. Verify exact titles, project paths, role acknowledgements, and pin success.
+14. Report the charter, file coverage, task-ledger mode and queue, roster, model profiles, token controls, and exclusions.
 
 ## Later activation sequence
 
@@ -109,8 +110,9 @@ Do not archive, delete, merge, replace, or take over tasks during automatic reco
 2. Re-evaluate lifecycle stage and commander charter.
 3. Discover new and unstructured project tasks.
 4. Reconcile them without archiving or replacing history.
-5. Ask Token Governance to audit repeated reads, duplicate missions, retries, and model overuse since the prior pass.
-6. Refresh employee roles and model baselines where responsibilities changed.
-7. Create only missing roles and avoid duplicate employees.
-8. Re-pin headquarters and verify its title.
-9. Report what changed and what token waste was prevented since the prior organization pass.
+5. Reconcile every non-terminal task-ledger entry with current files and employee windows, then recompute the ready queue.
+6. Ask Token Governance to audit repeated reads, duplicate missions, retries, and model overuse since the prior pass.
+7. Refresh employee roles and model baselines where responsibilities changed.
+8. Create only missing roles and avoid duplicate employees.
+9. Re-pin headquarters and verify its title.
+10. Resume continuous dispatch and report what changed, what was immediately reassigned, and what token waste was prevented.

@@ -33,6 +33,9 @@ Long-running projects become difficult to coordinate when research, implementati
 - Assign each employee a supported model profile and reasoning-effort baseline.
 - Maintain one `Employee00 | Token Governance and Model Routing | project` task to prevent repeated reads, duplicate missions, and model overuse.
 - Route work through Sol, Terra, and Luna policy tiers, or equivalent supported models when GPT-5.6 is unavailable.
+- Persist the decomposed dependency graph and live queue in `.codex/project-commander/TASK_LEDGER.md` for recovery and completion audits.
+- Validate and reassign an employee immediately after that employee finishes instead of waiting for a global batch barrier.
+- Offer Economy, Balanced/Normal, and Efficiency modes that tune WIP, model posture, checkpoint cadence, and Token use.
 - Rename tasks after registration settles, verify exact titles, and pin the commander.
 - Define mission scope, file ownership, forbidden actions, deliverables, validation, and completion criteria.
 - Collect employee reports, inspect evidence, request corrections, and perform final validation.
@@ -74,6 +77,16 @@ be the commander
 start commander
 ```
 
+You may combine activation with a mode:
+
+```text
+my project commander, economy mode
+my project commander, balanced mode
+my project commander, efficiency mode
+```
+
+When headquarters is already active, send `economy mode`, `balanced mode`, `normal mode`, or `efficiency mode` alone to switch modes without creating another commander.
+
 Natural-language invocation uses implicit skill matching and is not guaranteed when many skills are installed. For a durable command mapping, merge [AGENTS.command-bridge.en.md](examples/AGENTS.command-bridge.en.md) into `~/.codex/AGENTS.md`.
 
 ## Existing-project onboarding
@@ -108,6 +121,20 @@ It checks whether another employee already has the context, whether files or inv
 | 3 | Luna | extraction, classification, transformation, inventories, repetitive checks, high-volume runs |
 
 Start with the lowest sufficient tier. Every Luna-to-Terra or Terra-to-Sol escalation needs a recorded reason. After two substantially identical failures, stop and change the method before increasing model strength or reasoning. When the surface does not expose actual token usage, report observable proxies instead of inventing counts.
+
+## Continuous dispatch, task ledger, and modes
+
+Headquarters first records the complete objective, definition of done, dependencies, owner, state, model, checkpoint, evidence, and next action in the local task ledger. Each employee runs one primary mission at a time; later work remains queued.
+
+Whenever any employee finishes, headquarters validates it, releases ownership, unlocks dependencies, and immediately sends the next compatible ready mission. It waits for a group only when a real downstream dependency requires the whole group.
+
+| Mode | Production WIP | Default posture |
+| --- | --- | --- |
+| Economy | 1–2 | Luna/Low first, sparse checkpoints |
+| Balanced/Normal | 2–3 | Luna or Terra by mission, balanced default |
+| Efficiency | 3–5 non-conflicting missions | completion-triggered reassignment, Terra for bounded work, Sol still requires evidence |
+
+Headquarters is the ledger's only writer. The file stays local and untracked by default and stores no secrets, raw transcripts, or hidden reasoning. Progress monitoring uses evidence, promised checkpoints, blockers, and retries; it never labels a worker lazy without observable state.
 
 ## Operating model
 

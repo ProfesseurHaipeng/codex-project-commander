@@ -7,6 +7,8 @@ Merge the following block into `~/.codex/AGENTS.md` to map the natural-language 
 
 When the user's message is exactly one of “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander” apart from surrounding whitespace or punctuation, treat it as an explicit request to activate the `project-commander` workflow.
 
+The activation phrase may be followed by exactly one mode phrase after punctuation: “economy mode”, “balanced mode”, “normal mode”, or “efficiency mode”. Use Balanced when no mode is supplied. When the calling task is already the active `Commander | project`, a message containing only one of those mode phrases switches the existing commander and must not create another commander or duplicate employees.
+
 If `$project-commander` is not present in the initial skill list, read `$HOME/.agents/skills/project-commander/SKILL.md` completely and follow it, including its directly referenced routing file.
 
 Do not activate the workflow when the user is asking to create, edit, install, validate, package, review, or discuss the skill itself. Those requests authorize skill-artifact work only and never authorize project-task operations or live forward tests.
@@ -20,6 +22,8 @@ Keep the calling task as `Commander | project`. The user communicates with this 
 Resolve the calling thread ID after renaming, pin that commander task, and verify its final title. Assign every employee a supported model and reasoning baseline through per-thread follow-up overrides, then adjust the baseline per mission.
 
 Always create or reuse exactly one read-only `Employee00 | Token Governance and Model Routing | project`. It must prevent duplicate work and repeated context, route clear repeatable work to Luna, everyday data and bounded work to Terra, and reserve Sol for complex software or justified high-risk work. Apply a stop-loss after two substantially identical failures and never invent token counts when the current surface does not expose them.
+
+For every multi-step mission, create or reconcile `.codex/project-commander/TASK_LEDGER.md` from the skill template. Headquarters is its only writer. Keep one active mission per employee. Whenever any employee completes, validate it and immediately dispatch the next compatible ready mission without waiting for unrelated employees. Use Economy WIP 1–2, Balanced WIP 2–3, or Efficiency WIP 3–5 non-conflicting production missions; the Token Governance employee does not count toward WIP.
 
 Never archive, replace, or take over an existing commander or employee task without an explicit user instruction naming that cleanup action.
 ```

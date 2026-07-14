@@ -1,7 +1,7 @@
 interface:
   display_name: "Project Commander"
-  short_description: "Route Codex task windows with token-aware model tiers"
-  default_prompt: "Use $project-commander to organize this Codex project, establish Token Governance, route work through the lowest sufficient model tier, and pin the commander."
+  short_description: "Continuously route Codex tasks with a token-aware ledger"
+  default_prompt: "Use $project-commander to organize this Codex project, create its task ledger, continuously reassign completed employees, and run in Balanced mode."
 
 policy:
   allow_implicit_invocation: true

@@ -26,6 +26,9 @@
 - 为每名员工设置当前 Codex 环境支持的模型与推理基线，并按任务难度动态覆盖。
 - 固定设置一名 `员工00｜Token监管与模型路由｜项目名`，专门阻止重复读取、重复派工和模型过度使用。
 - 按 Sol、Terra、Luna 三级策略选择最低足够模型，并在当前环境不支持 GPT-5.6 时映射到等价档位。
+- 把完整任务拆成依赖图，持久记录在 `.codex/project-commander/TASK_LEDGER.md`，随时恢复和核对完成状态。
+- 任意员工完成后立即验收并续派下一项适配任务，不等待最慢窗口完成整批工作。
+- 提供节省、中等（普通）和效率三种模式，用 WIP、模型与检查频率共同控制速度和 Token。
 - 自动定位、命名并置顶总指挥窗口。
 - 为每次派工定义目标、范围、文件所有权、禁止事项、交付物和验收标准。
 - 并行处理独立的只读工作，避免多个员工同时修改同一文件。
@@ -86,6 +89,16 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
 启动总指挥
 ```
 
+还可以组合模式：
+
+```text
+我的总指挥，节省模式
+我的总指挥，中等模式
+我的总指挥，效率模式
+```
+
+总指挥已经启动时，单独发送 `节省模式`、`中等模式`、`普通模式` 或 `效率模式` 即可切换；不会新建第二个总指挥。
+
 自然语言属于隐式技能匹配，安装技能较多时不应把它当成绝对可靠的命令。若希望“我的总指挥”稳定映射到中文版 SKILL，可把 [AGENTS.command-bridge.md](examples/AGENTS.command-bridge.md) 中的内容合并进 `~/.codex/AGENTS.md`。
 
 ## 老项目接管模式
@@ -122,6 +135,20 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
 | 第三档 | Luna | 提取、分类、转换、清单、重复检查和批量跑量 |
 
 所有任务优先尝试最低足够档位。Luna 升 Terra、Terra 升 Sol 必须记录原因；同一路线两次实质相同失败后先止损和更换方法，不能靠不断提高模型与推理强度硬跑。界面没有公开真实 Token 用量时，只报告轮次、重试、重复读取等代理信号，不虚构数值。
+
+## 持续派工、任务账本与三种模式
+
+总指挥收到任务后，先把完整目标、完成定义、依赖、负责人、状态、模型、检查点和证据写入本地任务账本。每名员工一次只执行一条主任务线；后续工作留在队列。
+
+任意员工完成后，总指挥立即验收、释放文件所有权、解锁依赖并续派，不等待其他无关员工。只有真实下游依赖全部当前任务时才等待整组。
+
+| 模式 | 实际交付任务 WIP | 默认策略 |
+| --- | --- | --- |
+| 节省模式 | 1–2 | Luna/低推理优先，检查点稀疏 |
+| 中等模式（普通模式） | 2–3 | Luna/Terra 按任务分配，默认平衡 |
+| 效率模式 | 3–5 个互不冲突任务 | 完成即续派，有边界工作优先 Terra，Sol 仍需依据 |
+
+账本由总指挥唯一写入，默认不加入 Git，也不保存秘密、原始对话全文或隐藏思维过程。巡检只依据最后实质证据、承诺检查点、阻塞和重试判断“待命、受阻或停滞”，不会主观给员工贴“偷懒”标签。
 
 ## 工作方式
 
@@ -179,8 +206,10 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
     └── project-commander-zh/       # 中文
         ├── SKILL.md
         ├── agents/openai.yaml
+        ├── assets/TASK_LEDGER.template.md
         ├── scripts/project_inventory.py
         └── references/
+            ├── continuous-dispatch.md
             ├── dispatch-and-routing.md
             ├── existing-project-onboarding.md
             └── token-governance.md

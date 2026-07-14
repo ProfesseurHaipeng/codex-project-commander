@@ -12,6 +12,7 @@ Use this protocol for every roster and mission. Optimize for the lowest token an
 6. [Context-reuse rules](#context-reuse-rules)
 7. [Stop-loss and escalation](#stop-loss-and-escalation)
 8. [Token Governance report](#token-governance-report)
+9. [Operating-mode guardrails](#operating-mode-guardrails)
 
 ## Standing department
 
@@ -86,7 +87,7 @@ Reusable evidence added:
 Next saving action:
 ```
 
-Keep the ledger in headquarters or the Token Governance task response unless the user asks for a durable project artifact. Do not add noisy tracking files to the project by default.
+For multi-step missions, write these fields into the matching row or event in `.codex/project-commander/TASK_LEDGER.md` according to [continuous-dispatch.md](continuous-dispatch.md). Keep headquarters as the only writer. Keep the file local and untracked by default; do not edit `.gitignore` or commit it without user authorization.
 
 ## Pre-dispatch review
 
@@ -153,3 +154,15 @@ Headquarters decision needed:
 ```
 
 Keep recommendations concise. The goal is to prevent waste, not to create a second stream of long supervisory commentary.
+
+## Operating-mode guardrails
+
+Review the selected mode before dispatch:
+
+| Mode | Production WIP | Default cost posture | Governance focus |
+| --- | --- | --- | --- |
+| Economy | 1–2 | Luna and Low/Light first | maximum reuse, smallest deliverable, sparse checkpoints |
+| Balanced | 2–3 | Luna/Terra by mission | default balance of throughput, quality, and context reuse |
+| Efficiency | 3–5 non-conflicting missions | Terra for bounded work; Sol only with evidence | immediate event-driven reassignment without duplicate reads or idle polling |
+
+The Token Governance employee does not count toward production WIP. Higher WIP is permission to use available independent work, not a requirement to create tasks. A mode never bypasses file ownership, validation, escalation evidence, retry caps, or authority boundaries.
