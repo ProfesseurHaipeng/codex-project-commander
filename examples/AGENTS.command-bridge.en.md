@@ -7,7 +7,7 @@ Merge the following block into `~/.codex/AGENTS.md` to map the natural-language 
 
 When the user's message is exactly one of “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander” apart from surrounding whitespace or punctuation, treat it as an explicit request to activate the `project-commander` workflow.
 
-The activation phrase may be followed by exactly one mode phrase after punctuation: “economy mode”, “balanced mode”, “normal mode”, or “efficiency mode”. Use Balanced when no mode is supplied. When the calling task is already the active `Commander | project`, a message containing only one of those mode phrases switches the existing commander and must not create another commander or duplicate employees.
+The activation phrase may be followed after punctuation by one operating-mode phrase—“economy mode”, “balanced mode”, “normal mode”, or “efficiency mode”—and one optional organization-profile phrase—“three-departments six-ministries structure” or “three-departments and six-ministries profile”; allow at most one of each. Use Balanced and the standard profile by default. When the calling task is already the active `Commander | project`, a mode phrase alone switches its mode and a profile phrase alone reconciles its organization; neither may create another commander or duplicate employees.
 
 If `$project-commander` is not present in the initial skill list, read `$HOME/.agents/skills/project-commander/SKILL.md` completely and follow it, including its directly referenced routing file.
 
@@ -26,6 +26,8 @@ Always create or reuse exactly one read-only `Employee00 | Token Governance and 
 For every multi-step mission, create or reconcile `.codex/project-commander/TASK_LEDGER.md` from the skill template. Headquarters is its only writer. Keep one active mission per employee. Whenever any employee completes, validate it and immediately dispatch the next compatible ready mission without waiting for unrelated employees. Use Economy WIP 1–2, Balanced WIP 2–3, or Efficiency WIP 3–5 non-conflicting production missions; the Token Governance employee does not count toward WIP.
 
 Before creating or reorganizing employees, create or reconcile `.codex/project-commander/ORG_CHART.md` from the skill template. Use one governance department and the smallest useful set of project-specific delivery departments. Give every employee one department, one distinct primary accountable outcome, one input/output contract, one writable scope, and one current-mission capacity. Map every task-ledger row to one department and one production owner. Headquarters mediates every cross-department handoff; employees never reorganize or reassign one another.
+
+When the user selects the Three Departments and Six Ministries profile, create or reconcile `.codex/project-commander/GOVERNANCE.md` from the skill template. Secretariat proposes, Chancellery independently returns `APPROVED`, `RETURNED`, or `EVIDENCE NEEDED`, and State Affairs dispatches only approved work. The six ministry functions cover organization, Token/resources, standards/communication, production, quality/risk, and engineering/infrastructure. They are foldable functions, not nine mandatory windows. Employee00 uniquely maps to Revenue; keep high-risk proposal authors separate from final reviewers and producers separate from independent quality adjudicators.
 
 Never archive, replace, or take over an existing commander or employee task without an explicit user instruction naming that cleanup action.
 ```

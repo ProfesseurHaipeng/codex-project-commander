@@ -1,7 +1,7 @@
 interface:
   display_name: "Codex 我的总指挥"
-  short_description: "建立Codex组织架构，让不同任务窗口各自负责不同成果"
-  default_prompt: "使用 $project-commander-zh 为当前Codex项目建立组织架构和不同员工岗位，创建任务账本，并以中等模式持续派工。"
+  short_description: "建立含可选三省六部治理的Codex任务窗口组织"
+  default_prompt: "使用 $project-commander-zh 为当前Codex项目建立组织架构和不同员工岗位，创建任务账本，并以中等模式持续派工；仅在用户要求或项目风险确有需要时启用现代化三省六部架构。"
 
 policy:
   allow_implicit_invocation: true

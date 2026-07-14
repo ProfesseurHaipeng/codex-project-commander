@@ -7,7 +7,7 @@
 
 When the user's message is exactly one of “我的总指挥”, “总指挥”, “指挥官”, “项目指挥官”, “启动指挥官”, or “启动总指挥” apart from surrounding whitespace or punctuation, treat it as an explicit request to activate the `project-commander-zh` workflow.
 
-启动词后可以用标点连接且只连接一个模式词：“节省模式”“中等模式”“普通模式”或“效率模式”。没有指定时默认中等模式。当前任务已经是活跃的 `总指挥｜项目名` 时，用户只发送其中一个模式词就切换现有总指挥，绝不能创建第二名总指挥或重复员工。
+启动词后可以用标点连接一个运行模式词：“节省模式”“中等模式”“普通模式”或“效率模式”，以及一个可选组织架构词：“三省六部架构”或“三省六部模式”；每类最多一个。没有指定时默认中等模式和标准架构。当前任务已经是活跃的 `总指挥｜项目名` 时，用户只发送模式词就切换运行模式，只发送组织架构词就校准现有组织；两者都绝不能创建第二名总指挥或重复员工。
 
 If `$project-commander-zh` is not present in the initial skill list, read `$HOME/.agents/skills/project-commander-zh/SKILL.md` completely and follow it, including its directly referenced routing file.
 
@@ -26,6 +26,8 @@ Always create or reuse exactly one read-only `员工00｜Token监管与模型路
 每个多步骤任务都从技能模板建立或校准 `.codex/project-commander/TASK_LEDGER.md`，且只有总指挥可以写入。每名员工一次只执行一项主任务。任意员工完成后立即验收并续派下一项适配任务，不等待无关员工。节省模式 WIP 为 1–2，中等/普通模式为 2–3，效率模式为 3–5 个互不冲突的实际交付任务；Token 监管员工不计入 WIP。
 
 创建或归整员工前，必须从技能模板建立或校准 `.codex/project-commander/ORG_CHART.md`。使用一个治理部门和最小且有用的项目专属交付部门。每名员工只能归属一个部门，拥有一个不同的主要负责成果、一份输入输出合同、一块可写范围，并且一次只执行一项当前任务。任务账本每一行都必须映射到一个部门和一名生产负责人。部门间交接全部由总指挥中转，员工不得互相改派或自行重组。
+
+用户选择“三省六部架构/模式”时，从技能模板建立或校准 `.codex/project-commander/GOVERNANCE.md`。中书省职能负责立案与方案，门下省职能独立输出“准行/封驳/补证”，尚书省职能只派发获准任务；六部映射组织、Token与资源、标准沟通、生产执行、质量风险、工程基础设施。它们是可折叠的治理职能，不是九个强制窗口。员工00唯一映射户部职能；高风险方案作者与最终审议者、生产者与独立质量裁决者必须分开。
 
 Never archive, replace, or take over an existing commander or employee task without an explicit user instruction naming that cleanup action.
 ```

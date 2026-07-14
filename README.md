@@ -23,6 +23,7 @@
 - 扫描现有与近期新增任务窗口，复用、归类和重新配置适合的员工窗口。
 - 根据项目类型自动形成产品研发、内容运营、数据分析、影视制作或 Codex Skill 开发等总指挥画像。
 - 建立 `.codex/project-commander/ORG_CHART.md`，按项目交付物划分治理部门与项目专属交付部门。
+- 可选“现代化三省六部架构”，用中书立案、门下审议、尚书执行和六部职能池建立书面治理门，而不是机械创建九个窗口。
 - 为每个员工窗口分配唯一部门、主要负责成果、输入输出合同、可写范围和验收责任。
 - 在员工首轮登记结束后统一命名，并复查自动标题是否覆盖了名称。
 - 为每名员工设置当前 Codex 环境支持的模型与推理基线，并按任务难度动态覆盖。
@@ -99,7 +100,14 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
 我的总指挥，效率模式
 ```
 
+复杂或高风险项目可以同时选择治理架构：
+
+```text
+我的总指挥，效率模式，三省六部架构
+```
+
 总指挥已经启动时，单独发送 `节省模式`、`中等模式`、`普通模式` 或 `效率模式` 即可切换；不会新建第二个总指挥。
+单独发送“三省六部架构”或“三省六部模式”只校准现有组织，也不会创建第二名总指挥或重复员工。
 
 自然语言属于隐式技能匹配，安装技能较多时不应把它当成绝对可靠的命令。若希望“我的总指挥”稳定映射到中文版 SKILL，可把 [AGENTS.command-bridge.md](examples/AGENTS.command-bridge.md) 中的内容合并进 `~/.codex/AGENTS.md`。
 
@@ -169,6 +177,14 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
 部门与岗位根据真实交付物动态生成。例如软件项目可以分为产品规划、架构开发、质量发布；内容项目可以分为调研策略、内容生产、视觉分发质检；数据项目可以分为数据质量、分析建模、报告验证。
 
 默认不创建部门经理窗口，由总指挥直接管理所有员工，避免增加无产出的管理层。每项任务只属于一个部门并只有一名生产负责人；跨部门交接由总指挥使用已验收结果和压缩证据中转。组织架构决定“谁负责什么”，任务账本决定“现在做到哪里”。
+
+### 可选：现代化三省六部治理
+
+启用后，总指挥还会建立 `.codex/project-commander/GOVERNANCE.md`：中书省职能把目标写成可审议方案，门下省职能独立给出“准行、封驳或补证”，尚书省职能只把获准任务派给六部职能。六部对应组织任用、Token与资源、标准沟通、生产执行、质量风险、工程基础设施。
+
+这些是可折叠职能，不是九个固定窗口。小项目可以由 2–3 个交付员工兼任相容职能；高风险方案作者与最终审议者、生产者与独立质量裁决者必须分开。唯一员工00归入户部职能，继续只读监管 Token 与模型路由。
+
+设计参考了 [CCPM](https://github.com/automazeio/ccpm) 的依赖/冲突队列、[TDD Multi-Agent Orchestration](https://github.com/glebis/claude-skills/blob/main/tdd/SKILL.md) 的上下文隔离、[Code Review and Quality](https://github.com/addyosmani/agent-skills/blob/main/skills/code-review-and-quality/SKILL.md) 的独立质量门，以及 [Quality Playbook](https://github.com/github/awesome-copilot/blob/main/skills/quality-playbook/SKILL.md) 的阶段门和书面交接。
 
 ## 工作方式
 

@@ -11,6 +11,7 @@ Use this protocol after reconnaissance and before creating, adopting, or reassig
 5. [Route work and handoffs](#route-work-and-handoffs)
 6. [Scale by operating mode](#scale-by-operating-mode)
 7. [Reconcile long-running projects](#reconcile-long-running-projects)
+8. [Optional Three Departments and Six Ministries governance](#optional-three-departments-and-six-ministries-governance)
 
 ## Create the organization chart
 
@@ -126,3 +127,9 @@ When an organization chart already exists:
 7. update both the organization chart and task ledger before new dispatch.
 
 Do not churn the organization during an active mission unless a conflict, blocker, or changed objective makes the current structure invalid.
+
+## Optional Three Departments and Six Ministries governance
+
+When the user explicitly selects the profile, follow [Modern Three Departments and Six Ministries Governance](three-departments-six-ministries.md) in full and create `.codex/project-commander/GOVERNANCE.md`.
+
+The organization chart still answers where each employee belongs and which outcome it owns. The governance record answers who proposed the work, who independently reviewed it, whether it is approved, how it was handed off, and who performed the quality gate. Never expand the profile mechanically into nine task windows. Combine compatible functions by project size and mark unused functions unstaffed; keep high-risk proposal and final review, production and independent quality adjudication, and Token Governance and production ownership separate.
