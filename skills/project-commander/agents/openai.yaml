@@ -1,7 +1,7 @@
 interface:
-  display_name: "Project Commander"
-  short_description: "Organize Codex teams for efficient, safe app delivery"
-  default_prompt: "Use $project-commander to build the project organization and ledger, continuously dispatch, and monitor completion. Validate apps with builds, normal flows, tests, and static checks—never attack programs or unrelated sensitive data. If chat is the user's only API-key path, give one notice and proceed without echoing, forwarding, or persisting it. Under Launch-first, pass the minimum gate, launch, and defer nonblockers."
+  display_name: "Project Commander | Cross-platform"
+  short_description: "Portable governance; persistent employees in capable Codex hosts"
+  default_prompt: "Use $project-commander to probe host capabilities, then select full employee-window, persistent-session, or single-session mode. Build the organization and ledger, map live models to Sol/Terra/Luna, continuously dispatch, and validate. Never fabricate employees or automatic callbacks when persistent-task or heartbeat tools are absent. Validate apps with builds, normal flows, tests, and static checks. If chat is the user's only API-key path, give one notice and proceed without echoing, forwarding, or persisting it."
 
 policy:
   allow_implicit_invocation: true
