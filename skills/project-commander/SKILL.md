@@ -1,6 +1,6 @@
 ---
 name: project-commander
-description: Turn a new or long-running local Codex project into a Project Commander workforce of named sidebar task windows with a dedicated token-governance employee. Use when the user says “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”, or asks Codex to inspect an existing project, organize tasks into employees, reduce repeated token waste, route work across Sol, Terra, and Luna or equivalent supported tiers, pin the commander, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
+description: Turn a new or long-running local Codex project into a Project Commander workforce of named sidebar task windows with a dedicated token-governance employee, a durable task ledger, continuous event-driven dispatch, and economy, balanced, or efficiency modes. Use when the user says “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”; when an already-active commander receives “economy mode”, “balanced mode”, “normal mode”, or “efficiency mode”; or when the user asks Codex to inspect an existing project, organize tasks into employees, reduce repeated token waste, route work across Sol, Terra, and Luna or equivalent supported tiers, pin the commander, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
 ---
 
 # Project Commander
@@ -24,6 +24,7 @@ Read these resources before acting:
 - [references/existing-project-onboarding.md](references/existing-project-onboarding.md) when the folder is non-empty, has git history, or already contains project tasks.
 - [references/dispatch-and-routing.md](references/dispatch-and-routing.md) before assigning roles, model profiles, reasoning efforts, or missions.
 - [references/token-governance.md](references/token-governance.md) before creating the roster or dispatching work, and whenever repeated reading, duplicate work, or model overuse is suspected.
+- [references/continuous-dispatch.md](references/continuous-dispatch.md) whenever headquarters receives, resumes, monitors, or replans a multi-step mission, or the user selects an operating mode.
 
 Use [scripts/project_inventory.py](scripts/project_inventory.py) for a read-only project-wide file inventory when Python is available.
 
@@ -39,6 +40,8 @@ Treat the exact commands “my project commander”, “project commander”, �
 - rename, brief, steer, inspect, and consolidate employee tasks;
 - select supported per-employee model and reasoning baselines, then override them per mission when useful;
 - establish a standing token-governance employee that audits duplication, context reuse, model tier, reasoning effort, and stop-loss conditions;
+- create or reconcile a local task ledger, run continuous event-driven dispatch, and immediately reuse suitable employees as work becomes ready;
+- use Balanced mode by default, or honor an Economy, Balanced/Normal, or Efficiency mode included with the activation command;
 - rename and pin the calling commander task;
 - keep the user-facing conversation in headquarters.
 
@@ -193,6 +196,30 @@ When the user gives headquarters a mission:
 
 Include all necessary context in every assignment. The user should not need to repeat project history to employees.
 
+## Maintain the task ledger and operating mode
+
+For every multi-step mission, follow [continuous dispatch and durable task ledger](references/continuous-dispatch.md).
+
+1. Copy [assets/TASK_LEDGER.template.md](assets/TASK_LEDGER.template.md) to `.codex/project-commander/TASK_LEDGER.md` when no ledger exists.
+2. Record the full objective, completion condition, dependency graph, queue, owners, states, model/reasoning choices, checkpoints, evidence, and next actions before broad dispatch.
+3. Keep headquarters as the only ledger writer and reconcile the ledger with project evidence and employee windows whenever the mission resumes.
+4. Keep the ledger local and untracked by default. Do not change `.gitignore` or commit it without user authorization, and never store secrets or raw transcripts.
+5. Default to Balanced mode. Treat `economy mode`, `balanced mode`, `normal mode`, and `efficiency mode` as mode switches for the active commander. A mode-only switch must not create another commander or duplicate employees.
+6. Apply the selected mode's WIP, routing, and checkpoint posture without weakening authority, file ownership, validation, or stop-loss rules.
+
+Allow combined activation such as `my project commander, efficiency mode`. Record every mode change in the ledger.
+
+## Run continuous single-line dispatch
+
+Keep one active mission per employee. Queue subsequent work in the ledger.
+
+1. Dispatch all currently ready, non-conflicting work up to the selected mode's WIP target.
+2. At any employee completion, validate that result immediately instead of waiting for the other employees.
+3. Mark accepted work done, release its ownership, recompute dependencies, and immediately send the next compatible ready mission to that employee or another suitable idle employee.
+4. Wait for a group only when a named downstream task genuinely depends on every member of that group.
+5. Prefer the same employee for related follow-up work when its retained context reduces Token use and does not create a conflict.
+6. Replan failed, blocked, or stalled work within the retry cap; never fill idle capacity with invented work.
+
 ## Dispatch a bounded mission
 
 Send assignments with this contract:
@@ -223,12 +250,14 @@ Never send vague prompts such as “handle the backend” or “improve the proj
 Independent tasks do not directly message one another. Implement automatic reporting operationally:
 
 1. Require each employee to end with the structured report.
-2. Use `read_thread` to inspect progress and completed results.
-3. Read at meaningful intervals; do not busy-poll.
+2. Use `read_thread` to inspect completion events and promised meaningful checkpoints.
+3. Track the last meaningful evidence, next checkpoint, blocker, retry, and next compatible task in the ledger; do not busy-poll or subjectively label a worker lazy.
 4. Route corrections with `send_message_to_thread` using an appropriate model and reasoning override.
 5. Reassign a blocker only within existing authority.
 6. Ask the user when a missing choice, permission, credential, or external change materially affects the result.
-7. Send Token Governance one compact postflight summary after the batch; do not make it continuously poll employee tasks.
+7. After every accepted completion, update the ledger and continue dispatch immediately. Send Token Governance compact preflight/postflight deltas at meaningful decision points; do not make it continuously poll employee tasks.
+
+If a promised checkpoint passes without evidence, send one concise check-in. If the next meaningful inspection still shows no progress, mark the task `stalled`, preserve its evidence, apply the stop-loss when applicable, and narrow, replan, downgrade, justify an escalation, or reassign it. Read-only standby is not stalled; waiting on a named dependency is blocked.
 
 Headquarters owns final quality. Inspect diffs, tests, builds, rendered artifacts, browser state, documents, or other relevant surfaces. Reconcile conflicting conclusions and send failed work back with exact evidence.
 
@@ -239,6 +268,7 @@ Report an integrated result containing:
 - commander charter and project map on first activation;
 - reorganized and newly created employee roster;
 - each employee's baseline model and reasoning effort;
+- selected operating mode, queue state, immediately reassigned work, and any blocked or stalled tasks;
 - token-governance findings, prevented duplication, model downgrades or justified escalations, and measured usage only when the surface exposes it;
 - what is complete and how it was validated;
 - remaining risks, exclusions, or blockers;
