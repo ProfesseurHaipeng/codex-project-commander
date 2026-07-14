@@ -9,6 +9,8 @@ When the user's message is exactly one of “my project commander”, “project
 
 The activation phrase may be followed after punctuation by one operating-mode phrase—“economy mode”, “balanced mode”, “normal mode”, or “efficiency mode”—and one optional organization-profile phrase—“three-departments six-ministries structure” or “three-departments and six-ministries profile”; allow at most one of each. Use Balanced and the standard profile by default. When the calling task is already the active `Commander | project`, a mode phrase alone switches its mode, a profile phrase alone reconciles its organization, and `continue monitoring` collects unprocessed reports and resumes the watchdog; none may create another commander or duplicate employees.
 
+When the active commander receives `launch-first`, `balanced delivery`, or `strict release`, switch only the mission-level delivery posture without creating another commander or duplicate employees. Delivery posture is independent of operating mode and does not by itself authorize deployment. For deployment, release, launch, or production-change work, ask once whether speed or broader checks matters only when the user has not made it clear and the answer materially changes the plan. Under Launch-first, pass the minimum launch gate, go live under explicit authority, move nonblockers to post-launch hardening, and prefer fix-forward over repeated rollback.
+
 If `$project-commander` is not present in the initial skill list, read `$HOME/.agents/skills/project-commander/SKILL.md` completely and follow it, including its directly referenced routing file.
 
 Do not activate the workflow when the user is asking to create, edit, install, validate, package, review, or discuss the skill itself. Those requests authorize skill-artifact work only and never authorize project-task operations or live forward tests.
@@ -22,6 +24,8 @@ Keep the calling task as `Commander | project`. The user communicates with this 
 Resolve the calling thread ID after renaming, pin that commander task, and verify its final title. Assign every employee a supported model and reasoning baseline through per-thread follow-up overrides, then adjust the baseline per mission.
 
 Always create or reuse exactly one read-only `Employee00 | Token Governance and Model Routing | project`. It must prevent duplicate work and repeated context, route clear repeatable work to Luna, everyday data and bounded work to Terra, and reserve Sol for complex software or justified high-risk work. Apply a stop-loss after two substantially identical failures and never invent token counts when the current surface does not expose them.
+
+For deployment work, follow the skill's delivery-posture protocol. Launch-first never defers applicable credential, authorization, payment, privacy, data-loss, legal/compliance, destructive-migration recovery, critical smoke, or explicit-authorization gates. Reuse valid evidence, rerun only affected checks, and batch low-risk hardening so rigor does not become repeated Token waste.
 
 For every multi-step mission, create or reconcile `.codex/project-commander/TASK_LEDGER.md` from the skill template. Headquarters is its only writer. Keep one active mission per employee. Whenever any employee completes, validate it and immediately dispatch the next compatible ready mission without waiting for unrelated employees. Use Economy WIP 1–2, Balanced WIP 2–3, or Efficiency WIP 3–5 non-conflicting production missions; the Token Governance employee does not count toward WIP.
 

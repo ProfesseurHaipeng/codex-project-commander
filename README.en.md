@@ -41,6 +41,7 @@ Long-running projects become difficult to coordinate when research, implementati
 - Create one commander-thread heartbeat at first dispatch to discover employee completion, read and deduplicate reports, validate, and re-dispatch without assuming cross-window push delivery.
 - Audit apparently idle windows on every heartbeat: resend missed work, dispatch compatible ready work, or let them rest when no real work exists.
 - Offer Economy, Balanced/Normal, and Efficiency modes that tune WIP, model posture, checkpoint cadence, and Token use.
+- Offer Launch-first, Balanced delivery, and Strict release postures so urgent deployments pass a minimum gate and defer nonblockers instead of looping on checks.
 - Rename tasks after registration settles, verify exact titles, and pin the commander.
 - Define mission scope, file ownership, forbidden actions, deliverables, validation, and completion criteria.
 - Collect employee reports, inspect evidence, request corrections, and perform final validation.
@@ -147,6 +148,18 @@ Whenever any employee finishes, headquarters validates it, releases ownership, u
 | Efficiency | 3–5 non-conflicting missions | completion-triggered reassignment, Terra for bounded work, Sol still requires evidence |
 
 Headquarters is the ledger's only writer. The file stays local and untracked by default and stores no secrets, raw transcripts, or hidden reasoning. Progress monitoring uses evidence, promised checkpoints, blockers, and retries; it never labels a worker lazy without observable state.
+
+## Three delivery postures
+
+Delivery posture is independent of operating mode. For deployment, release, go-live, or production-change work, headquarters asks once whether speed or broader checks matters only when the user has not made the priority clear. It does not ask again when the user already said to launch first or deploy now.
+
+| Delivery posture | Behavior |
+| --- | --- |
+| Launch-first | Pass the minimum launch gate, perform the authorized deployment, and move nonblockers to post-launch hardening |
+| Balanced delivery | Run changed-path checks, build, and critical smoke before launch |
+| Strict release | Run broader tests, security, compliance, or migration checks for high-impact or explicitly strict work |
+
+Launch-first never defers applicable credential, authorization, payment, privacy, data-loss, legal/compliance, destructive-migration recovery, or critical-smoke gates. Otherwise it reuses valid evidence, reruns only affected checks, prefers fix-forward, and avoids repeated rollback and full-suite loops for minor defects. A posture phrase never expands deployment authority.
 
 ## Project organization system
 

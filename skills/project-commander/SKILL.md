@@ -1,6 +1,6 @@
 ---
 name: project-commander
-description: Turn a new or long-running local Codex project into a commander-led organization of named sidebar task-window employees with distinct departments, one Token Governance employee, a durable chart and ledger, a completion-watchdog heartbeat, idle-capacity audits, continuous re-dispatch, operating modes, and an optional Three Departments and Six Ministries profile. Use for “my project commander”, “project commander”, “commander”, “be the commander”, “start commander”; active-commander mode/profile switches or “continue monitoring”; existing-project onboarding; idle-window or completion monitoring; Sol/Terra/Luna routing; Token reduction; pinning; validation; and one-headquarters reporting. Employees are persistent project task windows, never subagents.
+description: Turn a Codex project into a commander-led organization of named sidebar task-window employees with departments, Token Governance, a durable ledger, completion monitoring, continuous dispatch, operating modes, and Launch-first, Balanced delivery, or Strict release postures. Use for “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”; active-commander mode, profile, posture, or monitoring changes; existing-project onboarding; idle audits; Sol/Terra/Luna routing; Token reduction; deployment pacing; pinning; validation; and one-headquarters reporting. Employees are persistent project task windows, never subagents.
 license: MIT
 ---
 
@@ -29,6 +29,7 @@ Read these resources before acting:
 - [references/completion-watchdog.md](references/completion-watchdog.md) before the first production dispatch, when resuming unfinished work, when monitoring employee completion, or when the user says `continue monitoring`.
 - [references/organization-system.md](references/organization-system.md) after project reconnaissance and before creating, adopting, reorganizing, or reassigning employee task windows.
 - [references/three-departments-six-ministries.md](references/three-departments-six-ministries.md) when the user selects that profile or complex, high-risk work benefits from separate proposal, review, execution, and validation functions.
+- [references/delivery-posture.md](references/delivery-posture.md) when a mission includes deployment, release, launch, go-live, or production changes, or the user switches delivery posture.
 
 Use [scripts/project_inventory.py](scripts/project_inventory.py) for a read-only project-wide file inventory when Python is available.
 
@@ -220,6 +221,10 @@ When the user gives headquarters a mission:
 9. Dispatch independent read-heavy work in parallel and serialize conflicting write-heavy work.
 10. When the Three Departments and Six Ministries profile is active, Secretariat proposes, Chancellery returns `APPROVED`, `RETURNED`, or `EVIDENCE NEEDED`, and State Affairs maps only approved work into ministry functions and dispatch.
 
+For a deployment, release, launch, or production-change mission, select Launch-first, Balanced delivery, or Strict release under [the delivery-posture protocol](references/delivery-posture.md). Do not ask again when the user already said to launch first or deploy now. If urgency is unclear and would materially change the plan, ask once whether to prioritize going live quickly or broader checks. Delivery posture is independent of operating mode, and a posture phrase is never deployment authorization.
+
+Under Launch-first, keep only the change-relevant minimum launch gate, perform the explicitly authorized deployment once it passes, and move nonblocking checks into post-launch hardening. Prefer fix-forward for reversible noncritical defects. Roll back only for active material harm or explicit user direction; do not repeatedly roll back, rerun full suites, and redeploy for minor defects.
+
 Include all necessary context in every assignment. The user should not need to repeat project history to employees.
 
 ## Maintain the task ledger and operating mode
@@ -233,6 +238,7 @@ For every multi-step mission, follow [continuous dispatch and durable task ledge
 5. Keep the ledger local and untracked by default. Do not change `.gitignore` or commit it without user authorization, and never store secrets or raw transcripts.
 6. Default to Balanced mode. Treat `economy mode`, `balanced mode`, `normal mode`, and `efficiency mode` as mode switches for the active commander. A mode-only switch must not create another commander or duplicate employees.
 7. Apply the selected mode's roster ceiling, WIP, routing, and checkpoint posture without weakening authority, file ownership, validation, or stop-loss rules.
+8. For deployment missions, record delivery posture, deployment authorization, launch target, and minimum-gate result. A posture-only switch must not create another commander, duplicate employees, or deploy anything.
 
 Allow combined activation such as `my project commander, efficiency mode` or `my project commander, efficiency mode, three-departments six-ministries structure`. Each operating-mode or organization-profile phrase may appear at most once. When the active commander receives only a Three Departments and Six Ministries profile phrase, reconcile the existing organization without creating another commander or duplicate employees. Record each change in the ledger and applicable governance record.
 
@@ -300,6 +306,7 @@ Report an integrated result containing:
 - reorganized and newly created employee roster;
 - each employee's baseline model and reasoning effort;
 - selected operating mode, queue state, immediately reassigned work, and any blocked or stalled tasks;
+- selected delivery posture, live status, and post-launch hardening when applicable;
 - token-governance findings, prevented duplication, model downgrades or justified escalations, and measured usage only when the surface exposes it;
 - what is complete and how it was validated;
 - remaining risks, exclusions, or blockers;

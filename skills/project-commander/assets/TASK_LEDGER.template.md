@@ -3,6 +3,10 @@
 Project:
 Commander:
 Mode: Balanced
+Delivery posture: not applicable | Launch-first | Balanced delivery | Strict release
+Deployment authorization: absent | explicit
+Go-live target/deadline:
+Minimum launch gate: not applicable | pending | passed | blocked
 Objective:
 Definition of done:
 Updated:
@@ -30,6 +34,11 @@ Employee states: `working`, `review`, `blocked`, `stalled`, `resting`. Resting r
 
 | ID | Decision/evidence | Source | Reuse guidance |
 | --- | --- | --- | --- |
+
+## Post-launch hardening
+
+| Item | Severity | Why deferred | Owner | Evidence | Trigger/due | Next action |
+| --- | --- | --- | --- | --- | --- | --- |
 
 ## Event log
 

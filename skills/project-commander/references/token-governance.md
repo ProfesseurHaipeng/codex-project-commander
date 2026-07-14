@@ -117,6 +117,8 @@ Reject or consolidate a mission when these questions reveal avoidable duplicatio
 - Do not ask several employees the same question unless independent verification is explicitly valuable; state the distinct method each reviewer must use.
 - Cap routine reports to the outcome, changes, validation, evidence, risk, and next action.
 - Poll only at meaningful checkpoints. Idle polling spends turns without producing evidence.
+- Reuse still-valid build, test, and release evidence before deployment. Do not rerun unchanged full suites; after a fix, rerun only affected checks.
+- Under [the delivery-posture protocol](delivery-posture.md), batch low-risk nonblockers into post-launch hardening instead of opening a window, rolling back, or running a full review for every minor issue.
 
 ## Stop-loss and escalation
 
