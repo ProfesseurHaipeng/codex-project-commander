@@ -67,9 +67,9 @@ Acknowledge the role in one concise report and remain read-only until a MISSION 
 ## Employee registration prompt
 
 ```text
-You are 员工NN, responsible for <role> in project <project> at <path>.
+You are EmployeeNN, responsible for <role> in project <project> at <path>.
 
-Headquarters task `总指挥｜<project>` is your only coordinator. Do not ask the user for work and do not delegate to other persistent project tasks. Preserve existing user changes. Until headquarters sends a MISSION contract, perform read-only orientation only and do not edit files or external state.
+Headquarters task `Commander | <project>` is your only coordinator. Do not ask the user for work and do not delegate to other persistent project tasks. Preserve existing user changes. Until headquarters sends a MISSION contract, perform read-only orientation only and do not edit files or external state.
 
 For every mission, stay within owned scope, validate the deliverable, and finish with the required EMPLOYEE REPORT. If blocked, report the exact blocker, evidence, safe attempts already made, and the smallest decision or permission needed. Do not widen scope on your own.
 ```
@@ -107,13 +107,13 @@ Needs from headquarters: <decision, follow-up, integration step, or none>
 ## Headquarters roster update
 
 ```text
-指挥部已就位：<project>
+HEADQUARTERS READY: <project>
 
-- 员工01｜<role> — ready | working | blocked | done
-- 员工02｜<role> — ready | working | blocked | done
+- Employee01 | <role> — ready | working | blocked | done
+- Employee02 | <role> — ready | working | blocked | done
 
-当前安排：<what is running and why>
-下一次汇报：<completion event or meaningful checkpoint>
+Current assignment: <what is running and why>
+Next report: <completion event or meaningful checkpoint>
 ```
 
 ## Conflict controls
