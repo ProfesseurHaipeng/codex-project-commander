@@ -64,7 +64,7 @@ Identify the calling task only after renaming it and matching active/recent stat
 
 ### Structured employees
 
-Reuse tasks already named `员工NN｜职责｜项目名` when their recent history still matches the role. Refresh the role configuration if project scope changed.
+Reuse tasks already named `EmployeeNN | role | project` when their recent history still matches the role. Refresh the role configuration if project scope changed.
 
 ### Newly added or unstructured candidates
 

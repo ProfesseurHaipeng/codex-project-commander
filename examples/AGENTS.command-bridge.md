@@ -1,13 +1,13 @@
 # “我的总指挥”全局命令桥
 
-将下面内容合并进 `~/.codex/AGENTS.md`，用于把自然语言“我的总指挥”稳定映射到 `$project-commander`。
+将下面内容合并进 `~/.codex/AGENTS.md`，用于把自然语言“我的总指挥”稳定映射到 `$project-commander-zh`。
 
 ```md
 ## 我的总指挥
 
-When the user's message is exactly “我的总指挥” apart from surrounding whitespace or punctuation, treat it as an explicit request to activate the `project-commander` workflow.
+When the user's message is exactly “我的总指挥” apart from surrounding whitespace or punctuation, treat it as an explicit request to activate the `project-commander-zh` workflow.
 
-If `$project-commander` is not present in the initial skill list, read `$HOME/.agents/skills/project-commander/SKILL.md` completely and follow it, including its directly referenced routing file.
+If `$project-commander-zh` is not present in the initial skill list, read `$HOME/.agents/skills/project-commander-zh/SKILL.md` completely and follow it, including its directly referenced routing file.
 
 Do not activate the workflow when the user is asking to create, edit, install, validate, package, review, or discuss the skill itself. Those requests authorize skill-artifact work only and never authorize project-task operations or live forward tests.
 

@@ -1,6 +1,10 @@
 # Codex Project Commander｜我的总指挥
 
+[中文说明](README.md) · [English](README.en.md)
+
 一个专门面向 Codex 本地项目的开源 SKILL：无论项目刚建立还是已经运行很久，都先理解项目文件、当前状态和任务历史，再把当前任务设为置顶“总指挥”，并归整同一项目侧边栏中的独立员工任务窗口。
+
+仓库同时提供两个可独立安装的版本：中文版 `project-commander-zh` 与英文版 `project-commander`。中文版元数据直接包含“总指挥、我的总指挥、Codex 总指挥”等关键词，便于在 GitHub 与 Codex 中检索。
 
 > 这里的“员工”是独立 Codex 项目任务窗口，不是子智能体、终端标签页或虚构角色。
 
@@ -28,12 +32,26 @@
 
 ## 安装
 
+请选择一种语言安装，避免两个版本因触发词重叠而同时被隐式调用。
+
+| 版本 | 技能目录 | 显式调用 |
+| --- | --- | --- |
+| 中文版 | `skills/project-commander-zh` | `$project-commander-zh` |
+| English | `skills/project-commander` | `$project-commander` |
+
 ### 方式一：让 Codex 安装
 
-把本仓库地址交给 `$skill-installer`，并指定技能目录：
+中文版：
 
 ```text
-使用 $skill-installer 安装这个仓库中的 skills/project-commander：
+使用 $skill-installer 安装这个仓库中的 skills/project-commander-zh：
+https://github.com/ProfesseurHaipeng/codex-project-commander
+```
+
+英文版：
+
+```text
+Use $skill-installer to install skills/project-commander from:
 https://github.com/ProfesseurHaipeng/codex-project-commander
 ```
 
@@ -42,7 +60,7 @@ https://github.com/ProfesseurHaipeng/codex-project-commander
 ```bash
 git clone https://github.com/ProfesseurHaipeng/codex-project-commander.git
 mkdir -p ~/.agents/skills
-cp -R codex-project-commander/skills/project-commander ~/.agents/skills/project-commander
+cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/project-commander-zh
 ```
 
 如果技能没有立即出现在 Codex 中，请重新启动 Codex。Codex 当前的用户级技能目录是 `$HOME/.agents/skills`。
@@ -52,7 +70,7 @@ cp -R codex-project-commander/skills/project-commander ~/.agents/skills/project-
 最可靠的显式调用方式：
 
 ```text
-使用 $project-commander 在当前项目启动“我的总指挥”。
+使用 $project-commander-zh 在当前项目启动“我的总指挥”。
 ```
 
 也可以输入：
@@ -61,7 +79,7 @@ cp -R codex-project-commander/skills/project-commander ~/.agents/skills/project-
 我的总指挥
 ```
 
-自然语言属于隐式技能匹配，安装技能较多时不应把它当成绝对可靠的命令。若希望“我的总指挥”稳定映射到该 SKILL，可把 [AGENTS.command-bridge.md](examples/AGENTS.command-bridge.md) 中的内容合并进 `~/.codex/AGENTS.md`。
+自然语言属于隐式技能匹配，安装技能较多时不应把它当成绝对可靠的命令。若希望“我的总指挥”稳定映射到中文版 SKILL，可把 [AGENTS.command-bridge.md](examples/AGENTS.command-bridge.md) 中的内容合并进 `~/.codex/AGENTS.md`。
 
 ## 老项目接管模式
 
@@ -122,9 +140,15 @@ cp -R codex-project-commander/skills/project-commander ~/.agents/skills/project-
 ├── docs/
 │   └── Codex便利使用指南.md
 ├── examples/
-│   └── AGENTS.command-bridge.md
+│   ├── AGENTS.command-bridge.md
+│   └── AGENTS.command-bridge.en.md
 └── skills/
-    └── project-commander/
+    ├── project-commander/          # English
+    │   ├── SKILL.md
+    │   ├── agents/openai.yaml
+    │   ├── scripts/project_inventory.py
+    │   └── references/
+    └── project-commander-zh/       # 中文
         ├── SKILL.md
         ├── agents/openai.yaml
         ├── scripts/project_inventory.py

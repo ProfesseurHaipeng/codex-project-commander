@@ -1,6 +1,6 @@
 ---
 name: project-commander
-description: Turn a new or long-running local Codex project into a commander-led workforce of named sidebar task windows. Use when the user says “我的总指挥”, “你是总指挥”, “启动总指挥”, or asks Codex to inspect an existing project, understand its files and task history, reorganize current and newly added project tasks into employees, assign supported model and reasoning profiles, pin the commander, dispatch work, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
+description: Turn a new or long-running local Codex project into a Project Commander workforce of named sidebar task windows. Use when the user says “my project commander”, “be the project commander”, “start project commander”, “我的总指挥”, or asks Codex to inspect an existing project, understand its files and task history, reorganize current and newly added project tasks into employees, assign supported model and reasoning profiles, pin the commander, dispatch work, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
 ---
 
 # Project Commander
@@ -28,7 +28,7 @@ Use [scripts/project_inventory.py](scripts/project_inventory.py) for a read-only
 
 ## Interpret the command
 
-Treat the exact command “我的总指挥” as explicit authorization to:
+Treat the exact commands “my project commander” and “我的总指挥” as explicit authorization to:
 
 - establish the calling task as headquarters;
 - inventory the target project's owned files and inspect its structure, documentation, configuration, source, recent changes, and current state;
@@ -96,7 +96,7 @@ Use the charter to choose roles. Do not force software-engineering roles onto a 
 
 ## Rename and pin headquarters
 
-1. Rename the calling task to `总指挥｜<项目名>` without requiring a thread ID.
+1. Rename the calling task to `Commander | <project>` without requiring a thread ID.
 2. Query project tasks for that exact title and exact project path.
 3. Identify the calling task by active status and most recent matching activity. If more than one task remains plausible, do not pin or rename another task; report the ambiguity.
 4. Call `set_thread_pinned` with the resolved calling thread ID.
@@ -110,7 +110,7 @@ Pin only headquarters automatically. Do not pin every employee.
 2. Read recent summaries for each relevant task before changing its role.
 3. Classify each task as headquarters, structured employee, newly added or unstructured employee candidate, historical project task, or ambiguous task.
 4. Reuse healthy structured employees.
-5. Adopt a newly added or unstructured task only when its history clearly matches a needed role. Send a role configuration, then rename it to `员工NN｜<职责>｜<项目名>`.
+5. Adopt a newly added or unstructured task only when its history clearly matches a needed role. Send a role configuration, then rename it to `EmployeeNN | <role> | <project>`.
 6. Preserve historical and ambiguous task titles. Mention them in the project map instead of silently repurposing them.
 7. Create new employee tasks only for missing responsibilities. Use the smallest roster that covers distinct deliverables.
 8. Never archive tasks during automatic reorganization.
