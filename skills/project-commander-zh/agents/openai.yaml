@@ -1,7 +1,7 @@
 interface:
   display_name: "Codex 我的总指挥"
-  short_description: "组织Codex任务员工，节省Token并选择上线节奏"
-  default_prompt: "使用 $project-commander-zh 为当前Codex项目建立组织和任务账本，以中等模式持续派工并监听完成；有适配工作就补派，没有就休息。部署任务若优先级不明，只问一次要尽快上线还是完整检查；紧急时保留最小上线门槛，先上线并把非阻断项转入后续补强，避免重复检查和回滚浪费Token。"
+  short_description: "组织Codex员工，节省Token并安全快速交付APP"
+  default_prompt: "使用 $project-commander-zh 建立项目组织和任务账本，持续派工并监听完成。APP验收只做构建、正常流程、测试和静态检查，不运行攻击程序或读取无关敏感数据。API Key若用户只能在聊天中提供，只提示一次后继续，不回显、不转发、不落盘。部署紧急时通过最小门槛先上线，非阻断项后补。"
 
 policy:
   allow_implicit_invocation: true
