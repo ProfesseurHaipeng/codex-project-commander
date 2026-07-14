@@ -6,7 +6,7 @@ Treat the selected role profile as a baseline, not a permanent lock. Apply it wi
 
 ## Contents
 
-1. [GPT-5.6 routing table](#gpt-56-routing-table)
+1. [Cross-provider routing table](#cross-provider-routing-table)
 2. [Escalation and downgrade](#escalation-and-downgrade)
 3. [Role baseline examples](#role-baseline-examples)
 4. [Role configuration follow-up](#role-configuration-follow-up)
@@ -19,18 +19,18 @@ Treat the selected role profile as a baseline, not a permanent lock. Apply it wi
 
 Read [organization-system.md](organization-system.md) before defining roles, [token-governance.md](token-governance.md) before approving dispatch, and [continuous-dispatch.md](continuous-dispatch.md) before scheduling a multi-step mission.
 
-## GPT-5.6 routing table
+## Cross-provider routing table
 
-Choose only from models and reasoning efforts that the current thread tool schema explicitly supports. Treat Sol, Terra, and Luna as policy tiers and resolve their actual selectable values at dispatch time.
+Choose only from models and reasoning efforts that the current host explicitly supports. Treat Sol, Terra, and Luna as provider-neutral policy tiers and resolve their actual selectable values at dispatch time. OpenAI, MiniMax, DeepSeek, Doubao, Kimi, Hermes, and other providers use the same decision rule; a provider name is not a capability tier.
 
-| Mission shape | Preferred GPT-5.6 tier | Reasoning | Typical examples |
+| Mission shape | Preferred capability tier | Reasoning | Typical examples |
 | --- | --- | --- | --- |
 | Mechanical, repeatable, fully specified | Luna | Light/Low | inventory, extraction, classification, formatting, deterministic transforms, high-volume runs |
 | Bounded everyday work | Terra | Medium | data organization, routine implementation, test writing, documentation, research synthesis |
 | Complex software or cross-system work | Sol | Medium; High with evidence | architecture, integration, difficult debugging, migration, nuanced code review |
 | Ambiguous or high-stakes adjudication | Sol | High or Extra High only when justified | security, irreversible design decisions, conflicting evidence, final adjudication |
 
-Use `gpt-5.6-sol` or the catalog's equivalent `gpt-5.6`, `gpt-5.6-terra`, and `gpt-5.6-luna` only when the current tool schema exposes them. Otherwise map Sol, Terra, and Luna to equivalent supported premium, balanced, and economical tiers.
+Use a specific model ID only when the live catalog exposes it. Map Sol, Terra, and Luna to supported premium, balanced, and economical choices. If the host has only one model, implement the tiers through reasoning effort, context budget, WIP, and validation depth; never pretend a model switch occurred.
 
 Start with Luna, then Terra, unless the mission definition itself demonstrates why the lower tier is unsuitable. Record the reason for every Sol assignment. Do not economize on final validation for high-impact work.
 

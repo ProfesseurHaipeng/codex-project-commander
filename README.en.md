@@ -2,9 +2,9 @@
 
 [中文说明](README.md) · [English](README.en.md)
 
-An open-source Codex skill that turns a new or long-running local project into a commander-led workforce of named task windows. It first understands the project files, current state, and task history; then it pins one commander task and organizes separate sidebar tasks as employees.
+An open-source, cross-host project commander skill. Codex, Claude Code, OpenCode, Kimi Code, and Hermes can load it natively; OpenAI, MiniMax, DeepSeek, Doubao, and other model APIs can use it through a compatible host or the portable prompt. It inspects a new or long-running project before establishing its organization, ledger, Token routing, and continuous dispatch.
 
-> An employee is a persistent Codex task window in the same local project, not a subagent, terminal tab, or fictional role.
+> In full mode, an employee is a real persistent named project task exposed by the host. Codex desktop can present these in the sidebar. Other hosts degrade gracefully and never pass off a subagent or fictional role as an employee window.
 
 This repository contains two independently installable editions:
 
@@ -35,7 +35,7 @@ Long-running projects become difficult to coordinate when research, implementati
 - Create only the missing employee task windows under the same local project.
 - Assign each employee a supported model profile and reasoning-effort baseline.
 - Maintain one `Employee00 | Token Governance and Model Routing | project` task to prevent repeated reads, duplicate missions, and model overuse.
-- Route work through Sol, Terra, and Luna policy tiers, or equivalent supported models when GPT-5.6 is unavailable.
+- Route work through provider-neutral Sol, Terra, and Luna policy tiers using the live models exposed by OpenAI, MiniMax, DeepSeek, Doubao, Kimi, Hermes, or another configured provider.
 - Persist the decomposed dependency graph and live queue in `.codex/project-commander/TASK_LEDGER.md` for recovery and completion audits.
 - Validate and reassign an employee immediately after that employee finishes instead of waiting for a global batch barrier.
 - Create one commander-thread heartbeat at first dispatch to discover employee completion, read and deduplicate reports, validate, and re-dispatch without assuming cross-window push delivery.
@@ -47,6 +47,22 @@ Long-running projects become difficult to coordinate when research, implementati
 - Rename tasks after registration settles, verify exact titles, and pin the commander.
 - Define mission scope, file ownership, forbidden actions, deliverables, validation, and completion criteria.
 - Collect employee reports, inspect evidence, request corrections, and perform final validation.
+
+## Cross-platform compatibility
+
+| Platform or provider | Native SKILL | Full sidebar employees | Entry |
+| --- | --- | --- | --- |
+| OpenAI Codex / Codex | Yes | Yes when project-task tools exist | `.agents/skills` |
+| Claude Code (Cloud Code) | Yes | Normally no; persistent/single-session governance | `.claude/skills` |
+| OpenCode (OpenCloud) | Yes | Capability-dependent | `.opencode/skills` or `.agents/skills` |
+| Kimi Code | Yes | Capability-dependent | `.kimi-code/skills`, `.agents/skills`, `/skill:project-commander` |
+| Hermes Agent | Yes | Persistent-session governance by default | GitHub-path install |
+| OpenAI API | No; an API is not a host | No | Compatible agent host or portable prompt |
+| MiniMax / MiniMax Codex | MiniMax is a model; Codex is the host | Determined by Codex tools | Official MiniMax Codex provider + this skill |
+| DeepSeek / DeepSea | Model/API | Determined by host | OpenAI/Anthropic-compatible host |
+| Doubao / Volcengine Ark | Model/API | Determined by host | OpenAI-SDK-compatible host |
+
+See [the compatibility protocol](skills/project-commander/references/platform-compatibility.md) for exact capability levels and fallback behavior. A model name never creates task windows, pinning, or a watchdog.
 
 ## Install
 
@@ -67,7 +83,7 @@ cp -R codex-project-commander/skills/project-commander ~/.agents/skills/project-
 
 Restart Codex if the skill does not appear immediately.
 
-### Install for Claude Code
+### Install for Claude Code, OpenCode, and Kimi Code
 
 The same Agent Skills-compatible package can be installed for Claude Code:
 
@@ -77,6 +93,22 @@ cp -R codex-project-commander/skills/project-commander ~/.claude/skills/project-
 ```
 
 Codex discovers `.agents/skills`; Claude Code discovers `.claude/skills`. The core `SKILL.md`, `references/`, `assets/`, and `scripts/` remain portable, while `agents/openai.yaml` is OpenAI/Codex presentation metadata. Claude Code can load the general organization, Token, delivery, and credential rules, but sidebar employees still require Codex project-task tools and Claude subagents do not substitute for them. See [Codex Build skills](https://developers.openai.com/codex/skills/) and [Claude Code Skills](https://code.claude.com/docs/en/slash-commands).
+
+```bash
+mkdir -p ~/.config/opencode/skills ~/.kimi-code/skills
+cp -R codex-project-commander/skills/project-commander ~/.config/opencode/skills/project-commander
+cp -R codex-project-commander/skills/project-commander ~/.kimi-code/skills/project-commander
+```
+
+OpenCode also discovers `.agents/skills` and `.claude/skills`; Kimi Code also discovers `.agents/skills`. In Kimi Code, invoke explicitly with `/skill:project-commander`.
+
+### Install for Hermes
+
+```bash
+hermes skills install ProfesseurHaipeng/codex-project-commander/skills/project-commander
+```
+
+If a host accepts only system/developer instructions, use [the portable English prompt](skills/project-commander/assets/PORTABLE_COMMANDER_PROMPT.md). It provides single-session governance and never fabricates sidebar employees.
 
 ## Use
 
@@ -241,21 +273,23 @@ OpenAI still recommends environment variables and prohibits embedding keys in cl
 ├── README.md                    # 中文
 ├── README.en.md                 # English
 ├── LICENSE
-├── docs/
+├── docs/                        # Codex and multi-platform guides
 ├── examples/
 │   ├── AGENTS.command-bridge.md
 │   └── AGENTS.command-bridge.en.md
 └── skills/
-    ├── project-commander/       # English skill
+    ├── project-commander/       # English skill + portable prompt + compatibility protocol
     └── project-commander-zh/    # 中文 SKILL
 ```
 
 ## Official references
 
-- [Build skills](https://learn.chatgpt.com/docs/build-skills)
-- [Custom instructions with AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
-- [Projects, chats, and tasks](https://learn.chatgpt.com/docs/projects)
-- [Models](https://learn.chatgpt.com/docs/models)
+- [OpenAI Codex Agent Skills](https://developers.openai.com/codex/skills/)
+- [Claude Code Skills](https://code.claude.com/docs/en/slash-commands)
+- [OpenCode Agent Skills](https://opencode.ai/docs/skills/)
+- [Kimi Code Skills](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/skills.html)
+- [MiniMax for Codex](https://platform.minimax.io/docs/token-plan/codex)
+- [Hermes Skills](https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/features/skills.md)
 
 ## License
 

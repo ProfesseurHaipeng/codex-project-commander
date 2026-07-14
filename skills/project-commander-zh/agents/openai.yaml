@@ -1,7 +1,7 @@
 interface:
-  display_name: "Codex 我的总指挥"
-  short_description: "组织Codex员工，节省Token并安全快速交付APP"
-  default_prompt: "使用 $project-commander-zh 建立项目组织和任务账本，持续派工并监听完成。APP验收只做构建、正常流程、测试和静态检查，不运行攻击程序或读取无关敏感数据。API Key若用户只能在聊天中提供，只提示一次后继续，不回显、不转发、不落盘。部署紧急时通过最小门槛先上线，非阻断项后补。"
+  display_name: "我的总指挥｜跨平台"
+  short_description: "跨平台项目治理；Codex可建立持久员工窗口"
+  default_prompt: "使用 $project-commander-zh 先探测宿主能力，再选择完整员工窗口、持久会话或单会话模式。建立项目组织和任务账本，按真实模型目录映射 Sol/Terra/Luna，持续派工并验收。没有持久任务或心跳工具时不得虚构员工或自动汇报。APP验收只做构建、正常流程、测试和静态检查；API Key若用户只能在聊天中提供，只提示一次后继续，不回显、不转发、不落盘。"
 
 policy:
   allow_implicit_invocation: true

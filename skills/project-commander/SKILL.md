@@ -1,12 +1,13 @@
 ---
 name: project-commander
-description: Turn a Codex project into a commander-led organization of named sidebar task-window employees with departments, Token Governance, a durable ledger, completion monitoring, continuous dispatch, operating and delivery modes, non-adversarial app validation, and low-friction API-key handling. Use for “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”; active-commander changes; existing-project onboarding; idle audits; Sol/Terra/Luna routing; Token reduction; deployment pacing; credential collaboration; pinning; validation; and integrated reporting. Employees are persistent project task windows, never subagents.
+description: Establish commander-led project governance in Agent Skills hosts including Codex, Claude Code, OpenCode, Kimi Code, and Hermes; on Codex surfaces with persistent named project-task tools, also organize sidebar employee windows. Supports compatible OpenAI, MiniMax, DeepSeek, Doubao, and other model providers with departments, Token Governance, a durable ledger, completion monitoring, continuous dispatch, delivery modes, non-adversarial app validation, and low-friction API-key handling. Use for “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”. Never substitute subagents for persistent employee windows or confuse a model API with a project-task system.
+compatibility: Native Agent Skills support for Codex, Claude Code, OpenCode, Kimi Code, and Hermes; model providers require a compatible host; full employee-window mode requires persistent named project tasks and monitoring tools.
 license: MIT
 ---
 
 # Project Commander
 
-Act as the user's only communication interface. Treat the calling task as headquarters and separate visible project tasks as persistent employees.
+Act as the user's only communication interface. Detect host capabilities first, then choose full employee-window, persistent-session, or single-session commander mode. Never claim a capability the host does not expose.
 
 ## Separate authoring from execution
 
@@ -14,9 +15,18 @@ When the user asks to create, edit, install, validate, package, review, publish,
 
 Activate the workforce only when the user issues the command inside the intended target project and expects it to run there. Treat any live forward-test as a side effect requiring explicit user approval.
 
+## Determine the compatibility level first
+
+Before any live activation, read [the cross-platform compatibility and graceful-degradation protocol](references/platform-compatibility.md) in full. Host identity, model provider, and employee-window capability are separate concerns:
+
+- Enable full employee-window mode only when the host exposes persistent, named, readable, redispatchable project task windows.
+- When a host loads the skill natively but lacks equivalent task windows, use persistent-session or single-session mode. Preserve organization, ledger, Token routing, and validation without inventing employees.
+- When only an OpenAI, MiniMax, DeepSeek, Doubao, or other model API is available, load this skill through a compatible agent host or inject [the portable commander prompt](assets/PORTABLE_COMMANDER_PROMPT.md). A model API is not an Agent Skills host.
+- If capabilities cannot be verified, select the lower compatibility level and disclose the limitation. Never infer tools, pinning, windows, or a watchdog from a model name.
+
 ## Enforce the employee invariant
 
-Define an employee as a separate, persistent Codex task window under the same local project, with its own title, transcript, and thread ID.
+In full mode, define an employee as a separate, persistent, named task window under the same local project, with its own title, transcript, and stable ID. In Codex desktop, this is a sidebar project task window.
 
 Never use `spawn_agent`, an internal subagent, the Subagents panel, a terminal tab, or a file as a substitute for an employee window.
 
@@ -56,9 +66,9 @@ Treat the exact commands “my project commander”, “project commander”, �
 
 Do not treat the command as permission for deletion, archiving, publishing, purchases, external messages, deployments, production changes, secret access, or unrelated scope expansion.
 
-## Use Codex project task tools
+## Use only real host project-task tools
 
-Use the current equivalents of:
+In full mode, use real host tools corresponding to the following capabilities. These are Codex example names; never assume another host exposes the same tools:
 
 - `list_projects`
 - `create_thread`
@@ -70,11 +80,13 @@ Use the current equivalents of:
 - `set_thread_archived`
 - `automation_update` or the current equivalent thread-heartbeat tool
 
-If project thread tools are unavailable, state that the visible-sidebar workflow cannot be created on the current surface. Do not pretend another surface is equivalent.
+If equivalent project-task tools are unavailable, immediately downgrade under the compatibility protocol and state that the visible-sidebar workflow cannot be created. Do not pretend subagents or another surface are equivalent. Without a heartbeat tool, never promise cross-turn automatic report collection.
 
 Never archive, replace, or take over another commander or employee task without an explicit user instruction naming that action. If multiple commander tasks exist, report the conflict and ask which one should remain authoritative.
 
 ## Match the local project
+
+Run the following steps only in full employee-window mode. Other modes use the current working directory and maintain the local ledger directly.
 
 1. Determine the active folder and repository root.
 2. Call `list_projects` and match the active folder to a saved local project.
@@ -200,7 +212,7 @@ Use a local environment for standing employees that must share the current worki
 
 ## Assign employee model and reasoning profiles
 
-Inspect the callable thread-tool schema for models and supported reasoning efforts on the current host. Never invent a model ID or unsupported combination.
+Inspect the current host's published model, provider, and reasoning-effort choices. Never invent a model ID or unsupported combination. OpenAI, MiniMax, DeepSeek, Doubao, Kimi, and Hermes labels identify providers or hosts; they do not automatically determine a Sol, Terra, or Luna tier.
 
 For every adopted or newly created employee:
 
