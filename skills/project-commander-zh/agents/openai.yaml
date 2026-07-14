@@ -1,7 +1,7 @@
 interface:
   display_name: "Codex 我的总指挥"
-  short_description: "建立可监听完成并续派的Codex任务窗口组织"
-  default_prompt: "使用 $project-commander-zh 为当前Codex项目建立组织和任务账本，以中等模式持续派工，并创建唯一总指挥心跳监听完成、验收、续派和空闲容量；有适配工作就补派，没有就让员工休息。"
+  short_description: "组织Codex任务员工，节省Token并选择上线节奏"
+  default_prompt: "使用 $project-commander-zh 为当前Codex项目建立组织和任务账本，以中等模式持续派工并监听完成；有适配工作就补派，没有就休息。部署任务若优先级不明，只问一次要尽快上线还是完整检查；紧急时保留最小上线门槛，先上线并把非阻断项转入后续补强，避免重复检查和回滚浪费Token。"
 
 policy:
   allow_implicit_invocation: true

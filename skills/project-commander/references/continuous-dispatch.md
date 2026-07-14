@@ -30,6 +30,7 @@ Update the ledger when:
 - an employee is assigned, released, or reassigned;
 - a dependency, model tier, reasoning effort, retry cap, or acceptance check changes;
 - a mode changes.
+- deployment authority, delivery posture, the minimum launch gate, or post-launch hardening changes.
 
 ## Represent the work
 
@@ -64,6 +65,8 @@ Default to Balanced mode. A mode controls work-in-progress, dispatch urgency, ch
 Count the Token Governance employee outside the production WIP target. Reduce WIP below the target when file ownership, dependencies, task-tool limits, or project risk require it. Never create filler work merely to reach a target.
 
 Allow a mode in the activation command, for example `my project commander, efficiency mode`. When headquarters is already active, a mode-only trigger changes the ledger and future routing; it does not create another commander or duplicate employees.
+
+Delivery posture is a separate dimension. For deployment work, record Launch-first, Balanced delivery, or Strict release under [the delivery-posture protocol](delivery-posture.md). A posture-only change does not alter WIP or grant deployment authority.
 
 ## Run the event loop
 

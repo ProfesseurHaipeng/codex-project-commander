@@ -1,7 +1,7 @@
 interface:
   display_name: "Project Commander"
-  short_description: "Build Codex task teams with completion monitoring"
-  default_prompt: "Use $project-commander to build this Codex project's organization and ledger, run Balanced continuous dispatch, and create one heartbeat that validates completion, re-dispatches ready work, audits apparently idle employees, and lets them rest when no real work exists."
+  short_description: "Organize Codex task teams, Tokens, and launch pacing"
+  default_prompt: "Use $project-commander to build this project's organization and ledger, run Balanced continuous dispatch, monitor completion, and reuse idle capacity. For deployment work, ask once whether speed or broader checks matters when unclear; under Launch-first keep the minimum launch gate, deploy with explicit authorization, defer nonblockers, and avoid repeated verification or rollback that wastes Tokens."
 
 policy:
   allow_implicit_invocation: true
