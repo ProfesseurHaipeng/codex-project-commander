@@ -6,6 +6,9 @@ Mode: Balanced
 Objective:
 Definition of done:
 Updated:
+Completion watchdog: not configured | active | paused | manual wake required
+Watchdog name:
+Last scan:
 
 > Headquarters is the only writer. Keep this file local and untracked by default. Store no secrets, credentials, hidden reasoning, raw transcripts, or full file contents.
 
@@ -18,8 +21,8 @@ States: `backlog`, `ready`, `running`, `blocked`, `review`, `done`, `cancelled`,
 
 ## Employee activity
 
-| Employee | Department/role | Current task | State | Last meaningful update | Blocker/retry | Next compatible task |
-| --- | --- | --- | --- | --- | --- | --- |
+| Employee | Department/role | Current task | State | Last meaningful update | Last processed report | Blocker/retry | Next compatible task |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Decisions and reusable evidence
 

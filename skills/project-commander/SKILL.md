@@ -1,6 +1,6 @@
 ---
 name: project-commander
-description: Turn a new or long-running local Codex project into a commander-led organization of named sidebar task-window employees with distinct departments, one Token Governance employee, a durable organization chart and task ledger, continuous dispatch, operating modes, and an optional modern Three Departments and Six Ministries governance profile. Use for “my project commander”, “project commander”, “commander”, “be the commander”, “start commander”; active-commander mode or profile switches; existing-project onboarding; employee-window organization; Sol/Terra/Luna routing; Token reduction; pinning; validation; and one-headquarters reporting. Employees are persistent project task windows, never subagents.
+description: Turn a new or long-running local Codex project into a commander-led organization of named sidebar task-window employees with distinct departments, one Token Governance employee, a durable organization chart and task ledger, a completion-watchdog heartbeat, continuous re-dispatch, operating modes, and an optional modern Three Departments and Six Ministries profile. Use for “my project commander”, “project commander”, “commander”, “be the commander”, “start commander”; active-commander mode/profile switches or “continue monitoring”; existing-project onboarding; employee completion monitoring; Sol/Terra/Luna routing; Token reduction; pinning; validation; and one-headquarters reporting. Employees are persistent project task windows, never subagents.
 license: MIT
 ---
 
@@ -26,6 +26,7 @@ Read these resources before acting:
 - [references/dispatch-and-routing.md](references/dispatch-and-routing.md) before assigning roles, model profiles, reasoning efforts, or missions.
 - [references/token-governance.md](references/token-governance.md) before creating the roster or dispatching work, and whenever repeated reading, duplicate work, or model overuse is suspected.
 - [references/continuous-dispatch.md](references/continuous-dispatch.md) whenever headquarters receives, resumes, monitors, or replans a multi-step mission, or the user selects an operating mode.
+- [references/completion-watchdog.md](references/completion-watchdog.md) before the first production dispatch, when resuming unfinished work, when monitoring employee completion, or when the user says `continue monitoring`.
 - [references/organization-system.md](references/organization-system.md) after project reconnaissance and before creating, adopting, reorganizing, or reassigning employee task windows.
 - [references/three-departments-six-ministries.md](references/three-departments-six-ministries.md) when the user selects that profile or complex, high-risk work benefits from separate proposal, review, execution, and validation functions.
 
@@ -45,6 +46,7 @@ Treat the exact commands “my project commander”, “project commander”, �
 - establish a standing token-governance employee that audits duplication, context reuse, model tier, reasoning effort, and stop-loss conditions;
 - create or reconcile a project-specific organization chart with departments, distinct role ownership, input/output contracts, and headquarters-mediated handoffs;
 - create or reconcile a local task ledger, run continuous event-driven dispatch, and immediately reuse suitable employees as work becomes ready;
+- create or reuse exactly one completion-watchdog heartbeat attached to headquarters; headquarters detects completion, validates it, updates the ledger, and re-dispatches work;
 - use Balanced mode by default, or honor an Economy, Balanced/Normal, or Efficiency mode included with the activation command;
 - when explicitly selected, establish a modern Three Departments and Six Ministries governance record and map proposal, independent review, execution administration, and six functional pools onto the smallest useful roster;
 - rename and pin the calling commander task;
@@ -64,6 +66,7 @@ Use the current equivalents of:
 - `set_thread_title`
 - `set_thread_pinned`
 - `set_thread_archived`
+- `automation_update` or the current equivalent thread-heartbeat tool
 
 If project thread tools are unavailable, state that the visible-sidebar workflow cannot be created on the current surface. Do not pretend another surface is equivalent.
 
@@ -272,15 +275,16 @@ Never send vague prompts such as “handle the backend” or “improve the proj
 
 ## Monitor, validate, and report
 
-Independent tasks do not directly message one another. Implement automatic reporting operationally:
+Independent tasks do not directly message one another, and a desktop completion notification does not write an employee report into headquarters. Follow [the completion-watchdog protocol](references/completion-watchdog.md):
 
 1. Require each employee to end with the structured report.
-2. Use `read_thread` to inspect completion events and promised meaningful checkpoints.
-3. Track the last meaningful evidence, next checkpoint, blocker, retry, and next compatible task in the ledger; do not busy-poll or subjectively label a worker lazy.
-4. Route corrections with `send_message_to_thread` using an appropriate model and reasoning override.
-5. Reassign a blocker only within existing authority.
-6. Ask the user when a missing choice, permission, credential, or external change materially affects the result.
-7. After every accepted completion, update the ledger and continue dispatch immediately. Send Token Governance compact preflight/postflight deltas at meaningful decision points; do not make it continuously poll employee tasks.
+2. Before the first production dispatch, create or reuse exactly one `Commander Watchdog | <project>` thread heartbeat. Never create a new standalone scheduled task for every scan.
+3. Let the heartbeat read only non-terminal employee windows in the ledger and deduplicate by task ID plus last processed report marker.
+4. On a new report, validate evidence, update the ledger, release ownership, recompute dependencies, and send the next mission in the same run.
+5. When nothing changed, send no employee message, repeat no summary, and invent no work. Pause the watchdog when no running, review, or ready work remains.
+6. If heartbeat capability is unavailable, monitor at low frequency while the current turn remains active and tell the user that cross-turn automatic handoff cannot be guaranteed. Never pretend reporting is automatic.
+7. Route corrections or new missions with `send_message_to_thread` using an appropriate model and reasoning override. Reassign blockers only within existing authority and ask the user when a material choice, permission, credential, or external change is missing.
+8. Keep Token Governance to compact preflight/postflight decisions; it does not own the watchdog.
 
 If a promised checkpoint passes without evidence, send one concise check-in. If the next meaningful inspection still shows no progress, mark the task `stalled`, preserve its evidence, apply the stop-loss when applicable, and narrow, replan, downgrade, justify an escalation, or reassign it. Read-only standby is not stalled; waiting on a named dependency is blocked.
 

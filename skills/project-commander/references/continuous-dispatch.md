@@ -73,7 +73,7 @@ After decomposing and recording the mission:
 2. Rank them by dependency impact, user value, risk reduction, context reuse, and cheapest sufficient model.
 3. Fill available WIP slots with non-conflicting tasks whose department and role match an available employee.
 4. Send exactly one mission to each chosen employee and mark it `running`.
-5. Read employee tasks at completion events or meaningful checkpoints.
+5. Enable the [completion watchdog](completion-watchdog.md) so a headquarters heartbeat discovers completion or meaningful checkpoints; never wait for a cross-window push from an employee.
 6. On any employee completion, validate the reported evidence immediately.
 7. If validation passes, mark the task `done`, release its ownership, and recompute dependencies.
 8. Immediately assign the highest-value compatible `ready` task to that employee or another idle suitable employee.
@@ -94,7 +94,7 @@ Record for each employee:
 - blocker, retry count, and changed hypothesis;
 - next compatible queued task.
 
-Read progress when a task reports completion, reaches a promised checkpoint, needs a dependency decision, or appears inconsistent with the latest project state. Avoid timer-based chatter that produces no evidence.
+Read progress when the watchdog finds an ended employee turn, a promised checkpoint, a dependency decision, or a conflict with current project state. Deduplicate by task ID and last processed report marker. The timed heartbeat exists to discover changes; avoid timer-based chatter that produces no evidence.
 
 If a checkpoint passes without meaningful progress:
 
@@ -116,5 +116,6 @@ At activation or resumption:
 5. correct stale departments, owners, states, dependencies, and model assignments;
 6. add newly discovered user requirements and project work;
 7. recompute the ready queue and restart the event loop.
+8. inspect the single completion watchdog, collect reports completed while it was inactive, and resume or pause it according to the current mode and queue.
 
 Treat the ledger as a compact operational index, not unquestionable truth. Current project evidence and verified task results win when they disagree with an old entry.

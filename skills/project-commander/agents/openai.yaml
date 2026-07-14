@@ -1,7 +1,7 @@
 interface:
   display_name: "Project Commander"
-  short_description: "Build governed Codex task-window organizations"
-  default_prompt: "Use $project-commander to build this Codex project's organization chart, assign distinct task-window roles, create its task ledger, and run continuous dispatch in Balanced mode. Use the optional Three Departments and Six Ministries profile only when requested or justified by project risk."
+  short_description: "Build Codex task teams with completion monitoring"
+  default_prompt: "Use $project-commander to build this Codex project's organization and task ledger, run continuous dispatch in Balanced mode, and create one commander heartbeat that detects employee completion, validates reports, and re-dispatches. Use the Three Departments and Six Ministries profile only when requested or justified by risk."
 
 policy:
   allow_implicit_invocation: true
