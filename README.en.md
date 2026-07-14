@@ -31,6 +31,8 @@ Long-running projects become difficult to coordinate when research, implementati
 - Reuse and organize suitable existing task windows without destroying historical tasks.
 - Create only the missing employee task windows under the same local project.
 - Assign each employee a supported model profile and reasoning-effort baseline.
+- Maintain one `Employee00 | Token Governance and Model Routing | project` task to prevent repeated reads, duplicate missions, and model overuse.
+- Route work through Sol, Terra, and Luna policy tiers, or equivalent supported models when GPT-5.6 is unavailable.
 - Rename tasks after registration settles, verify exact titles, and pin the commander.
 - Define mission scope, file ownership, forbidden actions, deliverables, validation, and completion criteria.
 - Collect employee reports, inspect evidence, request corrections, and perform final validation.
@@ -66,6 +68,10 @@ You can also say:
 
 ```text
 my project commander
+project commander
+commander
+be the commander
+start commander
 ```
 
 Natural-language invocation uses implicit skill matching and is not guaranteed when many skills are installed. For a durable command mapping, merge [AGENTS.command-bridge.en.md](examples/AGENTS.command-bridge.en.md) into `~/.codex/AGENTS.md`.
@@ -85,12 +91,31 @@ In a long-running project, the commander does not apply a fixed employee templat
 
 “Read the whole project” means evidence-backed coverage. Dependencies, generated output, caches, binaries, VCS internals, and likely secrets are not blindly loaded into context.
 
+## Token Governance and three-tier routing
+
+Every roster contains one read-only control employee:
+
+```text
+Employee00 | Token Governance and Model Routing | project
+```
+
+It checks whether another employee already has the context, whether files or investigations are being repeated, whether missions overlap, whether tasks can be consolidated, and whether a stronger model is justified. It performs no production work and creates no subordinate workers.
+
+| Tier | Model family | Default use |
+| --- | --- | --- |
+| 1 | Sol | complex software, cross-system debugging, ambiguous high-value work, high-risk final validation |
+| 2 | Terra | data organization, research, documentation, standard implementation, routine analysis |
+| 3 | Luna | extraction, classification, transformation, inventories, repetitive checks, high-volume runs |
+
+Start with the lowest sufficient tier. Every Luna-to-Terra or Terra-to-Sol escalation needs a recorded reason. After two substantially identical failures, stop and change the method before increasing model strength or reasoning. When the surface does not expose actual token usage, report observable proxies instead of inventing counts.
+
 ## Operating model
 
 ```text
 User
   ↓ communicates through one task
 Commander | project
+  ├─ Employee00 | Token Governance and Model Routing | project
   ├─ Employee01 | product and requirements | project
   ├─ Employee02 | research | project
   ├─ Employee03 | architecture | project
