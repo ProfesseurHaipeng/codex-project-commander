@@ -1,7 +1,7 @@
 interface:
   display_name: "Project Commander"
-  short_description: "Organize Codex task teams, Tokens, and launch pacing"
-  default_prompt: "Use $project-commander to build this project's organization and ledger, run Balanced continuous dispatch, monitor completion, and reuse idle capacity. For deployment work, ask once whether speed or broader checks matters when unclear; under Launch-first keep the minimum launch gate, deploy with explicit authorization, defer nonblockers, and avoid repeated verification or rollback that wastes Tokens."
+  short_description: "Organize Codex teams for efficient, safe app delivery"
+  default_prompt: "Use $project-commander to build the project organization and ledger, continuously dispatch, and monitor completion. Validate apps with builds, normal flows, tests, and static checks—never attack programs or unrelated sensitive data. If chat is the user's only API-key path, give one notice and proceed without echoing, forwarding, or persisting it. Under Launch-first, pass the minimum gate, launch, and defer nonblockers."
 
 policy:
   allow_implicit_invocation: true

@@ -42,6 +42,8 @@ Long-running projects become difficult to coordinate when research, implementati
 - Audit apparently idle windows on every heartbeat: resend missed work, dispatch compatible ready work, or let them rest when no real work exists.
 - Offer Economy, Balanced/Normal, and Efficiency modes that tune WIP, model posture, checkpoint cadence, and Token use.
 - Offer Launch-first, Balanced delivery, and Strict release postures so urgent deployments pass a minimum gate and defer nonblockers instead of looping on checks.
+- Keep app validation non-adversarial: never attack the project app or proactively access unrelated sensitive data.
+- When chat is the user's only API-key path, give one notice and proceed without echoing, forwarding, persisting, or repeatedly lecturing.
 - Rename tasks after registration settles, verify exact titles, and pin the commander.
 - Define mission scope, file ownership, forbidden actions, deliverables, validation, and completion criteria.
 - Collect employee reports, inspect evidence, request corrections, and perform final validation.
@@ -64,6 +66,17 @@ cp -R codex-project-commander/skills/project-commander ~/.agents/skills/project-
 ```
 
 Restart Codex if the skill does not appear immediately.
+
+### Install for Claude Code
+
+The same Agent Skills-compatible package can be installed for Claude Code:
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R codex-project-commander/skills/project-commander ~/.claude/skills/project-commander
+```
+
+Codex discovers `.agents/skills`; Claude Code discovers `.claude/skills`. The core `SKILL.md`, `references/`, `assets/`, and `scripts/` remain portable, while `agents/openai.yaml` is OpenAI/Codex presentation metadata. Claude Code can load the general organization, Token, delivery, and credential rules, but sidebar employees still require Codex project-task tools and Claude subagents do not substitute for them. See [Codex Build skills](https://developers.openai.com/codex/skills/) and [Claude Code Skills](https://code.claude.com/docs/en/slash-commands).
 
 ## Use
 
@@ -215,6 +228,11 @@ If the current Codex surface lacks task-heartbeat or Scheduled capability, headq
 - One employee owns each writable file or overlapping subsystem at a time.
 - Existing tasks are not archived, replaced, or taken over without explicit user authorization.
 - The skill does not independently authorize publishing, deployment, purchases, external messages, production changes, or secret access.
+- App, website, service, and API validation defaults to builds, normal flows, tests, static checks, dependency advisories, and test data. It does not run attacks, exploits, brute force, credential stuffing, malicious payloads, denial of service, port scans, penetration tests, or red-team traffic.
+- It does not proactively read unrelated `.env` files, private keys, cookies, real-user, payment, or health data, and never writes sensitive values into ledgers, employee messages, source, Git, logs, or reports.
+- API keys use an environment variable or Secret field first. If the user cannot use another path or insists on chat, headquarters gives one concise notice and proceeds without echoing, forwarding, persisting, or repeatedly lecturing.
+
+OpenAI still recommends environment variables and prohibits embedding keys in clients or repositories. The chat fallback is not authorization to share or persist a key; it only avoids repeatedly blocking a user who has no other input path. See [OpenAI API key safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
 ## Repository structure
 

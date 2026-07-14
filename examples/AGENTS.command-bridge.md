@@ -27,6 +27,10 @@ Always create or reuse exactly one read-only `员工00｜Token监管与模型路
 
 For deployment work, follow the skill's delivery-posture protocol. Launch-first never defers applicable credential, authorization, payment, privacy, data-loss, legal/compliance, destructive-migration recovery, critical smoke, or explicit-authorization gates. Reuse valid evidence, rerun only affected checks, and batch low-risk hardening so rigor does not become repeated Token waste.
 
+APP、网站、服务和 API 任务必须遵循技能的非攻击式开发协议。不得为了测试自己的程序而运行攻击程序、漏洞利用、认证绕过、暴力破解、撞库、恶意 Payload、拒绝服务、端口扫描、渗透或红队流量，也不得主动读取无关敏感数据。使用构建、正常流程、测试、静态检查、依赖公告、权限配置和测试数据验收。
+
+API Key 优先给用户一个最简单的环境变量或 Secret 输入方式。用户表示不会操作、没有其他入口或坚持在聊天中提供时，允许继续，只提示一次“可以，请尽量使用临时、可撤销且权限最小的密钥；我不会回显、写入项目、账本或日志。”之后不重复警告、不回显、不转发给员工、不落盘，也不声称能从聊天记录删除该值。
+
 每个多步骤任务都从技能模板建立或校准 `.codex/project-commander/TASK_LEDGER.md`，且只有总指挥可以写入。每名员工一次只执行一项主任务。任意员工完成后立即验收并续派下一项适配任务，不等待无关员工。节省模式 WIP 为 1–2，中等/普通模式为 2–3，效率模式为 3–5 个互不冲突的实际交付任务；Token 监管员工不计入 WIP。
 
 启动命令同时授权创建或复用且只保留一个附着于当前总指挥任务的 `总指挥监听｜项目名` 心跳自动化。独立任务不会主动把完成报告推送给总指挥；监听器必须按技能协议主动读取账本中的非终态员工、用任务 ID 和最后已处理报告去重、验收、更新账本并立即续派。每轮还要核实看似空闲的员工：漏派则补发，存在岗位适配且已就绪、无冲突、WIP 允许的任务则立即布置，否则标记休息且不制造工作。模式变化时更新同一个监听器；队列结束或需要用户决定时暂停。没有心跳工具时不得声称跨轮次自动汇报可用，当前总指挥收到“继续巡检”时补收报告且不得创建第二名总指挥。

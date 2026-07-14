@@ -1,6 +1,6 @@
 ---
 name: project-commander
-description: Turn a Codex project into a commander-led organization of named sidebar task-window employees with departments, Token Governance, a durable ledger, completion monitoring, continuous dispatch, operating modes, and Launch-first, Balanced delivery, or Strict release postures. Use for “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”; active-commander mode, profile, posture, or monitoring changes; existing-project onboarding; idle audits; Sol/Terra/Luna routing; Token reduction; deployment pacing; pinning; validation; and one-headquarters reporting. Employees are persistent project task windows, never subagents.
+description: Turn a Codex project into a commander-led organization of named sidebar task-window employees with departments, Token Governance, a durable ledger, completion monitoring, continuous dispatch, operating and delivery modes, non-adversarial app validation, and low-friction API-key handling. Use for “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”; active-commander changes; existing-project onboarding; idle audits; Sol/Terra/Luna routing; Token reduction; deployment pacing; credential collaboration; pinning; validation; and integrated reporting. Employees are persistent project task windows, never subagents.
 license: MIT
 ---
 
@@ -30,6 +30,7 @@ Read these resources before acting:
 - [references/organization-system.md](references/organization-system.md) after project reconnaissance and before creating, adopting, reorganizing, or reassigning employee task windows.
 - [references/three-departments-six-ministries.md](references/three-departments-six-ministries.md) when the user selects that profile or complex, high-risk work benefits from separate proposal, review, execution, and validation functions.
 - [references/delivery-posture.md](references/delivery-posture.md) when a mission includes deployment, release, launch, go-live, or production changes, or the user switches delivery posture.
+- [references/safe-app-development-and-credentials.md](references/safe-app-development-and-credentials.md) for app, website, or service development; runtime validation; sensitive data; or API-key handling.
 
 Use [scripts/project_inventory.py](scripts/project_inventory.py) for a read-only project-wide file inventory when Python is available.
 
@@ -93,6 +94,14 @@ Perform reconnaissance before choosing the commander identity or employee roles.
 7. State what was fully read, sampled, metadata-only, excluded, unreadable, or still unknown. Never claim “read every file” when exclusions or context limits prevented it.
 
 Do not flood headquarters with raw file contents. Retain a concise project map and evidence pointers.
+
+## Keep app development non-adversarial
+
+App, website, service, and API projects must follow [the non-adversarial app-development and credential protocol](references/safe-app-development-and-credentials.md). Do not run attack programs, exploits, authentication bypasses, brute force, credential stuffing, malicious payloads, denial of service, port scans, penetration tests, or red-team traffic against the project, even when the user owns it. Do not automatically dispatch such employee missions.
+
+Validate through builds, launches, normal user flows, unit and integration tests, static checks, dependency advisories, permission configuration, and test data. Do not proactively access unrelated real-user, payment, health, credential, or other sensitive data.
+
+Offer one simple environment-variable or Secret input first for API keys. If the user cannot use it, has no other input surface, or insists on providing the key in chat, let them proceed after exactly one concise notice from the protocol. Never echo it, forward it to employees, write it into the project, ledger, Git, or logs, or repeat the warning.
 
 ## Infer the commander charter
 
@@ -227,6 +236,8 @@ Under Launch-first, keep only the change-relevant minimum launch gate, perform t
 
 Include all necessary context in every assignment. The user should not need to repeat project history to employees.
 
+For software missions, include adversarial self-testing and unrelated sensitive-data access in the forbidden scope by default.
+
 ## Maintain the task ledger and operating mode
 
 For every multi-step mission, follow [continuous dispatch and durable task ledger](references/continuous-dispatch.md).
@@ -309,6 +320,7 @@ Report an integrated result containing:
 - selected delivery posture, live status, and post-launch hardening when applicable;
 - token-governance findings, prevented duplication, model downgrades or justified escalations, and measured usage only when the surface exposes it;
 - what is complete and how it was validated;
+- non-adversarial validation evidence and whether sensitive-data access was minimized, without outputting any credential value;
 - remaining risks, exclusions, or blockers;
 - decisions that truly require the user.
 

@@ -35,6 +35,8 @@
 - 每轮监听先核实看似空闲的窗口：漏派就立即补派，有适配的已就绪工作就开始，没有真实工作就安静休息。
 - 提供节省、中等（普通）和效率三种模式，用 WIP、模型与检查频率共同控制速度和 Token。
 - 为部署任务提供上线优先、平衡交付和严格发布三种策略，紧急时通过最小上线门槛就上线，非阻断项留到后续补强。
+- APP 开发只执行非攻击式验收，不用攻击程序测试自己的产品，也不主动接触无关敏感数据。
+- 用户只能在聊天中提供 API Key 时只提示一次后继续，不回显、不转发、不落盘、不反复劝阻。
 - 自动定位、命名并置顶总指挥窗口。
 - 为每次派工定义目标、范围、文件所有权、禁止事项、交付物和验收标准。
 - 并行处理独立的只读工作，避免多个员工同时修改同一文件。
@@ -75,6 +77,17 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
 ```
 
 如果技能没有立即出现在 Codex 中，请重新启动 Codex。Codex 当前的用户级技能目录是 `$HOME/.agents/skills`。
+
+### Claude Code 安装
+
+同一份 SKILL 遵循 Agent Skills 通用结构，也可以安装到 Claude Code：
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R codex-project-commander/skills/project-commander-zh ~/.claude/skills/project-commander-zh
+```
+
+Codex 使用 `.agents/skills`，Claude Code 使用 `.claude/skills`；核心 `SKILL.md`、`references/`、`assets/` 和 `scripts/` 保持通用，`agents/openai.yaml` 仅用于 OpenAI/Codex 展示。Claude Code 可以加载通用组织、Token、交付和凭据规则，但侧边栏员工窗口仍需要 Codex 项目任务工具，Claude 子智能体不会冒充这些员工。参考：[Codex Build skills](https://developers.openai.com/codex/skills/)、[Claude Code Skills](https://code.claude.com/docs/en/slash-commands)。
 
 ## 使用
 
@@ -229,6 +242,11 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
 - 不让多个员工同时拥有同一文件或子系统的写权限。
 - 未经用户明确授权，不归档、替换或接管现有任务。
 - SKILL 不自动扩大到发布、部署、购买、外部消息、生产数据或秘密信息操作。
+- APP、网站、服务和 API 的默认验收只使用构建、正常流程、测试、静态检查、依赖公告和测试数据；不运行攻击程序、漏洞利用、暴力破解、撞库、恶意 Payload、拒绝服务、端口扫描、渗透或红队流量。
+- 不主动读取无关 `.env`、私钥、Cookie、真实用户、支付或健康数据，也不把敏感值写入任务账本、员工消息、源码、Git、日志或报告。
+- API Key 优先使用环境变量或 Secret 输入框。用户确实不会操作或坚持在聊天中提供时，只做一次极简提示后继续；不回显、不转发、不落盘、不反复说教。
+
+OpenAI 官方仍建议 API Key 使用环境变量、不得放入客户端或仓库；本技能的聊天兜底不是分享或持久化授权，只是避免在用户没有其他入口时反复阻塞。[API Key 安全指南](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety)
 
 ## 更便利地使用 Codex
 
