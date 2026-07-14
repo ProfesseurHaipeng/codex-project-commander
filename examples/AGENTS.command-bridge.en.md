@@ -5,7 +5,7 @@ Merge the following block into `~/.codex/AGENTS.md` to map the natural-language 
 ```md
 ## My project commander
 
-When the user's message is exactly “my project commander” apart from surrounding whitespace or punctuation, treat it as an explicit request to activate the `project-commander` workflow.
+When the user's message is exactly one of “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander” apart from surrounding whitespace or punctuation, treat it as an explicit request to activate the `project-commander` workflow.
 
 If `$project-commander` is not present in the initial skill list, read `$HOME/.agents/skills/project-commander/SKILL.md` completely and follow it, including its directly referenced routing file.
 
@@ -18,6 +18,8 @@ For a non-empty or long-running project, first inventory project-owned files, in
 Keep the calling task as `Commander | project`. The user communicates with this commander; the commander dispatches work to employee task windows, reads their results, validates them, and reports one integrated outcome.
 
 Resolve the calling thread ID after renaming, pin that commander task, and verify its final title. Assign every employee a supported model and reasoning baseline through per-thread follow-up overrides, then adjust the baseline per mission.
+
+Always create or reuse exactly one read-only `Employee00 | Token Governance and Model Routing | project`. It must prevent duplicate work and repeated context, route clear repeatable work to Luna, everyday data and bounded work to Terra, and reserve Sol for complex software or justified high-risk work. Apply a stop-loss after two substantially identical failures and never invent token counts when the current surface does not expose them.
 
 Never archive, replace, or take over an existing commander or employee task without an explicit user instruction naming that cleanup action.
 ```

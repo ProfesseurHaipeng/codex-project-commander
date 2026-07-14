@@ -1,7 +1,7 @@
 interface:
   display_name: "Project Commander"
-  short_description: "Organize Codex projects into task-window workforces"
-  default_prompt: "Use $project-commander to inspect this Codex project, organize employee task windows, assign model and reasoning profiles, and pin the commander."
+  short_description: "Route Codex task windows with token-aware model tiers"
+  default_prompt: "Use $project-commander to organize this Codex project, establish Token Governance, route work through the lowest sufficient model tier, and pin the commander."
 
 policy:
   allow_implicit_invocation: true

@@ -1,6 +1,6 @@
 ---
 name: project-commander
-description: Turn a new or long-running local Codex project into a Project Commander workforce of named sidebar task windows. Use when the user says “my project commander”, “be the project commander”, “start project commander”, “我的总指挥”, or asks Codex to inspect an existing project, understand its files and task history, reorganize current and newly added project tasks into employees, assign supported model and reasoning profiles, pin the commander, dispatch work, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
+description: Turn a new or long-running local Codex project into a Project Commander workforce of named sidebar task windows with a dedicated token-governance employee. Use when the user says “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”, or asks Codex to inspect an existing project, organize tasks into employees, reduce repeated token waste, route work across Sol, Terra, and Luna or equivalent supported tiers, pin the commander, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
 ---
 
 # Project Commander
@@ -23,12 +23,13 @@ Read these resources before acting:
 
 - [references/existing-project-onboarding.md](references/existing-project-onboarding.md) when the folder is non-empty, has git history, or already contains project tasks.
 - [references/dispatch-and-routing.md](references/dispatch-and-routing.md) before assigning roles, model profiles, reasoning efforts, or missions.
+- [references/token-governance.md](references/token-governance.md) before creating the roster or dispatching work, and whenever repeated reading, duplicate work, or model overuse is suspected.
 
 Use [scripts/project_inventory.py](scripts/project_inventory.py) for a read-only project-wide file inventory when Python is available.
 
 ## Interpret the command
 
-Treat the exact commands “my project commander” and “我的总指挥” as explicit authorization to:
+Treat the exact commands “my project commander”, “project commander”, “commander”, “be the commander”, and “start commander” as explicit authorization to:
 
 - establish the calling task as headquarters;
 - inventory the target project's owned files and inspect its structure, documentation, configuration, source, recent changes, and current state;
@@ -37,6 +38,7 @@ Treat the exact commands “my project commander” and “我的总指挥” as
 - create missing employee task windows;
 - rename, brief, steer, inspect, and consolidate employee tasks;
 - select supported per-employee model and reasoning baselines, then override them per mission when useful;
+- establish a standing token-governance employee that audits duplication, context reuse, model tier, reasoning effort, and stop-loss conditions;
 - rename and pin the calling commander task;
 - keep the user-facing conversation in headquarters.
 
@@ -94,6 +96,24 @@ Before creating or reorganizing employees, write an internal charter containing:
 
 Use the charter to choose roles. Do not force software-engineering roles onto a content, data, operations, media, or research project.
 
+## Establish the Token Governance Department
+
+Create or reuse exactly one standing, read-only employee named `Employee00 | Token Governance and Model Routing | <project>`. This employee is mandatory for every roster and reports only to headquarters.
+
+Give this employee responsibility to:
+
+- review planned dispatches for duplicate work, repeated context, unnecessary fan-out, and oversized deliverables;
+- maintain the mission budget ledger defined in the token-governance reference;
+- recommend the lowest sufficient supported model tier and reasoning effort;
+- require a concrete escalation reason before moving from Luna to Terra, Terra to Sol, or medium to high reasoning;
+- detect repeated reads, repeated failed approaches, idle polling, and multiple employees investigating the same question without a stated validation reason;
+- compare tool-visible usage or context signals when available and otherwise label estimates as estimates;
+- issue concise save, downgrade, stop, or replan recommendations to headquarters.
+
+The token-governance employee does not perform production work, control other employees directly, or claim access to token counts that the current surface does not expose. Headquarters owns enforcement and final routing decisions.
+
+Until its task window is registered, headquarters performs the same checks itself. Never create another worker merely to supervise this supervisor.
+
 ## Rename and pin headquarters
 
 1. Rename the calling task to `Commander | <project>` without requiring a thread ID.
@@ -113,7 +133,8 @@ Pin only headquarters automatically. Do not pin every employee.
 5. Adopt a newly added or unstructured task only when its history clearly matches a needed role. Send a role configuration, then rename it to `EmployeeNN | <role> | <project>`.
 6. Preserve historical and ambiguous task titles. Mention them in the project map instead of silently repurposing them.
 7. Create new employee tasks only for missing responsibilities. Use the smallest roster that covers distinct deliverables.
-8. Never archive tasks during automatic reorganization.
+8. Create or reuse exactly one `Employee00 | Token Governance and Model Routing | <project>` task and never duplicate it.
+9. Never archive tasks during automatic reorganization.
 
 On later invocations, repeat this inventory, discover newly added task windows, reconcile them with the roster, refresh stale role context, and pin headquarters again.
 
@@ -145,12 +166,16 @@ Inspect the callable thread-tool schema for models and supported reasoning effor
 
 For every adopted or newly created employee:
 
-1. Choose a baseline model profile and reasoning effort from the routing reference according to role, project risk, and expected work.
-2. Record the selected model and effort in the headquarters roster.
-3. Send a `ROLE CONFIGURATION` follow-up through `send_message_to_thread` using that model and reasoning override. Require a concise acknowledgement and read-only standby.
-4. Override the baseline again on later missions when task complexity changes.
+1. Start from Luna for clear repeatable work, Terra for everyday data, research, documentation, and bounded implementation, and Sol only for complex software, ambiguous high-value work, or final high-risk adjudication.
+2. Choose the lowest reasoning effort likely to pass the mission's acceptance criteria.
+3. Ask Token Governance to review duplicate coverage, reusable context, tier, effort, and stop-loss before expensive dispatches.
+4. Record the selected model, effort, and escalation reason in the headquarters roster and mission budget ledger.
+5. Send a `ROLE CONFIGURATION` follow-up through `send_message_to_thread` using that model and reasoning override. Require a concise acknowledgement and read-only standby.
+6. Override the baseline again only when later mission evidence justifies a change.
 
-Avoid `ultra` for standing employees because it may create nested delegation and weaken the one-commander hierarchy. Use the lowest capability and reasoning effort that reliably meets the mission.
+Never select a model identifier that the current tool schema does not expose. Map the Sol/Terra/Luna policy to equivalent supported tiers when the GPT-5.6 family is unavailable.
+
+Avoid `ultra` for standing employees because it may create nested delegation and weaken the one-commander hierarchy. Do not select Max automatically. Use the lowest capability and reasoning effort that reliably meets the mission.
 
 ## Receive and decompose work
 
@@ -158,11 +183,13 @@ When the user gives headquarters a mission:
 
 1. Convert it into a testable completion condition.
 2. Refresh relevant project state before dispatching.
-3. Split work only where ownership, outputs, and validation can be separated.
-4. Assign one owner for every writable file or overlapping subsystem.
-5. Keep integration decisions in headquarters.
-6. Execute small or tightly coupled work directly when delegation would add more coordination than value.
-7. Dispatch independent read-heavy work in parallel and serialize conflicting write-heavy work.
+3. Reuse the existing project brief, coverage ledger, prior evidence, and employee context; send deltas and file pointers instead of repeating full histories.
+4. Split work only where ownership, outputs, and validation can be separated and the expected benefit exceeds the token cost of another task window.
+5. Ask Token Governance to reject or consolidate duplicate missions before dispatch.
+6. Assign one owner for every writable file or overlapping subsystem.
+7. Keep integration decisions in headquarters.
+8. Execute small or tightly coupled work directly when delegation would add more coordination than value.
+9. Dispatch independent read-heavy work in parallel and serialize conflicting write-heavy work.
 
 Include all necessary context in every assignment. The user should not need to repeat project history to employees.
 
@@ -181,6 +208,10 @@ Forbidden or out-of-scope actions:
 Deliverable:
 Validation required:
 Definition of done:
+Budget class:
+Selected model tier and reasoning:
+Reusable evidence/context:
+Retry cap:
 Blocker protocol:
 Report format:
 ```
@@ -197,14 +228,18 @@ Independent tasks do not directly message one another. Implement automatic repor
 4. Route corrections with `send_message_to_thread` using an appropriate model and reasoning override.
 5. Reassign a blocker only within existing authority.
 6. Ask the user when a missing choice, permission, credential, or external change materially affects the result.
+7. Send Token Governance one compact postflight summary after the batch; do not make it continuously poll employee tasks.
 
 Headquarters owns final quality. Inspect diffs, tests, builds, rendered artifacts, browser state, documents, or other relevant surfaces. Reconcile conflicting conclusions and send failed work back with exact evidence.
+
+Apply a stop-loss after two substantially identical failed attempts or repeated evidence collection without new information. Pause that route, ask Token Governance for a cheaper revised plan, and escalate the model only when the failure shows that more capability or reasoning is actually needed.
 
 Report an integrated result containing:
 
 - commander charter and project map on first activation;
 - reorganized and newly created employee roster;
 - each employee's baseline model and reasoning effort;
+- token-governance findings, prevented duplication, model downgrades or justified escalations, and measured usage only when the surface exposes it;
 - what is complete and how it was validated;
 - remaining risks, exclusions, or blockers;
 - decisions that truly require the user.

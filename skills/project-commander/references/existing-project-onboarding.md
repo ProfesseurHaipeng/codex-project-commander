@@ -40,6 +40,8 @@ Infer the commander's identity from files, documentation, task history, and curr
 
 Use mixed roles for mixed projects. Choose three to six roles by distinct deliverables, not by a fixed template.
 
+Add `Employee00 | Token Governance and Model Routing | project` to every archetype. It is a mandatory read-only control role and does not replace a deliverable-owning employee.
+
 Produce this charter before reorganizing tasks:
 
 ```text
@@ -93,11 +95,13 @@ Do not archive, delete, merge, replace, or take over tasks during automatic reco
 4. Infer the commander charter.
 5. Rename and resolve headquarters, then pin it.
 6. Inventory and read relevant task windows.
-7. Reuse, adopt, or create the smallest useful employee roster.
-8. Settle titles after registration turns complete.
-9. Assign model and reasoning baselines with `ROLE CONFIGURATION` follow-ups.
-10. Verify exact titles, project paths, role acknowledgements, and pin success.
-11. Report the charter, file-coverage ledger, roster, model profiles, and exclusions.
+7. Reuse or create the single Token Governance employee before other expensive dispatches.
+8. Ask Token Governance to identify duplicate roles and propose the lowest sufficient model tier for each remaining role; headquarters applies the decision.
+9. Reuse, adopt, or create the smallest useful deliverable-owning roster.
+10. Settle titles after registration turns complete.
+11. Assign model, reasoning, token budget, and stop-loss baselines with `ROLE CONFIGURATION` follow-ups.
+12. Verify exact titles, project paths, role acknowledgements, and pin success.
+13. Report the charter, file-coverage ledger, roster, model profiles, token controls, and exclusions.
 
 ## Later activation sequence
 
@@ -105,7 +109,8 @@ Do not archive, delete, merge, replace, or take over tasks during automatic reco
 2. Re-evaluate lifecycle stage and commander charter.
 3. Discover new and unstructured project tasks.
 4. Reconcile them without archiving or replacing history.
-5. Refresh employee roles and model baselines where responsibilities changed.
-6. Create only missing roles and avoid duplicate employees.
-7. Re-pin headquarters and verify its title.
-8. Report what changed since the prior organization pass.
+5. Ask Token Governance to audit repeated reads, duplicate missions, retries, and model overuse since the prior pass.
+6. Refresh employee roles and model baselines where responsibilities changed.
+7. Create only missing roles and avoid duplicate employees.
+8. Re-pin headquarters and verify its title.
+9. Report what changed and what token waste was prevented since the prior organization pass.
