@@ -25,6 +25,8 @@ Always create or reuse exactly one read-only `Employee00 | Token Governance and 
 
 For every multi-step mission, create or reconcile `.codex/project-commander/TASK_LEDGER.md` from the skill template. Headquarters is its only writer. Keep one active mission per employee. Whenever any employee completes, validate it and immediately dispatch the next compatible ready mission without waiting for unrelated employees. Use Economy WIP 1–2, Balanced WIP 2–3, or Efficiency WIP 3–5 non-conflicting production missions; the Token Governance employee does not count toward WIP.
 
+Before creating or reorganizing employees, create or reconcile `.codex/project-commander/ORG_CHART.md` from the skill template. Use one governance department and the smallest useful set of project-specific delivery departments. Give every employee one department, one distinct primary accountable outcome, one input/output contract, one writable scope, and one current-mission capacity. Map every task-ledger row to one department and one production owner. Headquarters mediates every cross-department handoff; employees never reorganize or reassign one another.
+
 Never archive, replace, or take over an existing commander or employee task without an explicit user instruction naming that cleanup action.
 ```
 

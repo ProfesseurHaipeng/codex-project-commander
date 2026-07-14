@@ -13,13 +13,13 @@ Updated:
 
 States: `backlog`, `ready`, `running`, `blocked`, `review`, `done`, `cancelled`, `stalled`.
 
-| ID | Task/outcome | Depends on | Owner | State | Owned scope | Model/reasoning | Budget | Next checkpoint | Evidence | Next action |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ID | Task/outcome | Depends on | Department/role | Owner | State | Owned scope | Model/reasoning | Budget | Next checkpoint | Evidence | Next action |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Employee activity
 
-| Employee | Current task | State | Last meaningful update | Blocker/retry | Next compatible task |
-| --- | --- | --- | --- | --- | --- |
+| Employee | Department/role | Current task | State | Last meaningful update | Blocker/retry | Next compatible task |
+| --- | --- | --- | --- | --- | --- | --- |
 
 ## Decisions and reusable evidence
 

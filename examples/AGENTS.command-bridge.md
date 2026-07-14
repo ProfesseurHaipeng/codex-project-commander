@@ -25,6 +25,8 @@ Always create or reuse exactly one read-only `员工00｜Token监管与模型路
 
 每个多步骤任务都从技能模板建立或校准 `.codex/project-commander/TASK_LEDGER.md`，且只有总指挥可以写入。每名员工一次只执行一项主任务。任意员工完成后立即验收并续派下一项适配任务，不等待无关员工。节省模式 WIP 为 1–2，中等/普通模式为 2–3，效率模式为 3–5 个互不冲突的实际交付任务；Token 监管员工不计入 WIP。
 
+创建或归整员工前，必须从技能模板建立或校准 `.codex/project-commander/ORG_CHART.md`。使用一个治理部门和最小且有用的项目专属交付部门。每名员工只能归属一个部门，拥有一个不同的主要负责成果、一份输入输出合同、一块可写范围，并且一次只执行一项当前任务。任务账本每一行都必须映射到一个部门和一名生产负责人。部门间交接全部由总指挥中转，员工不得互相改派或自行重组。
+
 Never archive, replace, or take over an existing commander or employee task without an explicit user instruction naming that cleanup action.
 ```
 

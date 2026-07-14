@@ -22,6 +22,8 @@
 - 接管长期运行的既有项目，建立全项目文件地图并识别当前工作阶段。
 - 扫描现有与近期新增任务窗口，复用、归类和重新配置适合的员工窗口。
 - 根据项目类型自动形成产品研发、内容运营、数据分析、影视制作或 Codex Skill 开发等总指挥画像。
+- 建立 `.codex/project-commander/ORG_CHART.md`，按项目交付物划分治理部门与项目专属交付部门。
+- 为每个员工窗口分配唯一部门、主要负责成果、输入输出合同、可写范围和验收责任。
 - 在员工首轮登记结束后统一命名，并复查自动标题是否覆盖了名称。
 - 为每名员工设置当前 Codex 环境支持的模型与推理基线，并按任务难度动态覆盖。
 - 固定设置一名 `员工00｜Token监管与模型路由｜项目名`，专门阻止重复读取、重复派工和模型过度使用。
@@ -150,6 +152,24 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
 
 账本由总指挥唯一写入，默认不加入 Git，也不保存秘密、原始对话全文或隐藏思维过程。巡检只依据最后实质证据、承诺检查点、阻塞和重试判断“待命、受阻或停滞”，不会主观给员工贴“偷懒”标签。
 
+## 项目组织架构系统
+
+总指挥在熟悉项目后先建立组织架构，再创建员工：
+
+```text
+总指挥｜项目名
+├─ 治理部门
+│  └─ 员工00｜Token监管与模型路由｜项目名
+└─ 项目专属交付部门
+   ├─ 员工01｜不同职责｜项目名
+   ├─ 员工02｜不同职责｜项目名
+   └─ 员工NN｜不同职责｜项目名
+```
+
+部门与岗位根据真实交付物动态生成。例如软件项目可以分为产品规划、架构开发、质量发布；内容项目可以分为调研策略、内容生产、视觉分发质检；数据项目可以分为数据质量、分析建模、报告验证。
+
+默认不创建部门经理窗口，由总指挥直接管理所有员工，避免增加无产出的管理层。每项任务只属于一个部门并只有一名生产负责人；跨部门交接由总指挥使用已验收结果和压缩证据中转。组织架构决定“谁负责什么”，任务账本决定“现在做到哪里”。
+
 ## 工作方式
 
 ```text
@@ -206,12 +226,14 @@ cp -R codex-project-commander/skills/project-commander-zh ~/.agents/skills/proje
     └── project-commander-zh/       # 中文
         ├── SKILL.md
         ├── agents/openai.yaml
+        ├── assets/ORG_CHART.template.md
         ├── assets/TASK_LEDGER.template.md
         ├── scripts/project_inventory.py
         └── references/
             ├── continuous-dispatch.md
             ├── dispatch-and-routing.md
             ├── existing-project-onboarding.md
+            ├── organization-system.md
             └── token-governance.md
 ```
 
