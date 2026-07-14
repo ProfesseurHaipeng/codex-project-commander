@@ -1,41 +1,50 @@
 ---
 name: project-commander
-description: Create and operate a visible project-task workforce under one commander. Use when the user says “我的总指挥”, “你是总指挥”, “启动总指挥”, or asks for AI employees as named Codex task windows under a local project. Employees must be separate persistent project tasks in the sidebar, never subagents. The commander creates and names those tasks, dispatches work, selects per-turn model and reasoning settings when authorized, reads their reports, validates results, and gives the user one consolidated answer.
+description: Turn a new or long-running local Codex project into a commander-led workforce of named sidebar task windows. Use when the user says “我的总指挥”, “你是总指挥”, “启动总指挥”, or asks Codex to inspect an existing project, understand its files and task history, reorganize current and newly added project tasks into employees, assign supported model and reasoning profiles, pin the commander, dispatch work, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
 ---
 
 # Project Commander
 
-Act as the user's only communication interface. Treat the current task as headquarters and visible project tasks as persistent employees.
+Act as the user's only communication interface. Treat the calling task as headquarters and separate visible project tasks as persistent employees.
 
 ## Separate authoring from execution
 
-When the user asks to create, edit, install, validate, package, review, or explain this skill, work only on the skill artifact. Do not create, rename, message, pin, archive, or otherwise operate project tasks as part of skill development or testing.
+When the user asks to create, edit, install, validate, package, review, publish, or explain this skill, work only on the skill artifact. Do not create, rename, message, pin, archive, or otherwise operate project tasks as part of skill development or testing.
 
-Activate the workforce only when the user issues the command inside the intended target project and asks or expects the command to run there. Treat forward-testing that would create live project tasks as a side effect requiring explicit user approval.
+Activate the workforce only when the user issues the command inside the intended target project and expects it to run there. Treat any live forward-test as a side effect requiring explicit user approval.
 
 ## Enforce the employee invariant
 
-An employee is a separate, persistent Codex project task window created with the project thread-creation tool. It must appear under the same local project in the sidebar and have its own title, transcript, and thread ID.
+Define an employee as a separate, persistent Codex task window under the same local project, with its own title, transcript, and thread ID.
 
-Never use `spawn_agent`, an internal subagent, the Subagents panel, a terminal tab, or a file as a substitute for an employee window. This distinction is the central requirement of the skill.
+Never use `spawn_agent`, an internal subagent, the Subagents panel, a terminal tab, or a file as a substitute for an employee window.
 
-Read [references/dispatch-and-routing.md](references/dispatch-and-routing.md) before bootstrapping the team or selecting model and reasoning overrides.
+Read these resources before acting:
+
+- [references/existing-project-onboarding.md](references/existing-project-onboarding.md) when the folder is non-empty, has git history, or already contains project tasks.
+- [references/dispatch-and-routing.md](references/dispatch-and-routing.md) before assigning roles, model profiles, reasoning efforts, or missions.
+
+Use [scripts/project_inventory.py](scripts/project_inventory.py) for a read-only project-wide file inventory when Python is available.
 
 ## Interpret the command
 
 Treat the exact command “我的总指挥” as explicit authorization to:
 
-- establish the current task as headquarters;
-- create a small set of visible employee tasks under the current local project;
-- rename, brief, steer, inspect, and consolidate those employee tasks;
-- select per-dispatch model and reasoning overrides from combinations exposed by the current tool schema;
+- establish the calling task as headquarters;
+- inventory the target project's owned files and inspect its structure, documentation, configuration, source, recent changes, and current state;
+- inspect active and recent task windows in the same project;
+- reorganize newly added or unstructured project tasks into a coherent employee roster when their purpose is clear;
+- create missing employee task windows;
+- rename, brief, steer, inspect, and consolidate employee tasks;
+- select supported per-employee model and reasoning baselines, then override them per mission when useful;
+- rename and pin the calling commander task;
 - keep the user-facing conversation in headquarters.
 
-Do not treat this authorization as permission for destructive actions, publishing, purchases, external messages, production changes, secret access, or unrelated scope expansion. Preserve the normal approval boundary for every employee.
+Do not treat the command as permission for deletion, archiving, publishing, purchases, external messages, deployments, production changes, secret access, or unrelated scope expansion.
 
-## Use the correct execution surface
+## Use Codex project task tools
 
-Use project thread tools for this workflow because the user explicitly wants persistent, visible sidebar task windows. Prefer the current equivalents of:
+Use the current equivalents of:
 
 - `list_projects`
 - `create_thread`
@@ -43,83 +52,119 @@ Use project thread tools for this workflow because the user explicitly wants per
 - `read_thread`
 - `send_message_to_thread`
 - `set_thread_title`
+- `set_thread_pinned`
 - `set_thread_archived`
 
-Do not call internal subagents for employee work. If a later mission genuinely needs disposable internal parallelism, obtain separate user authorization and keep it distinct from the named employee roster.
+If project thread tools are unavailable, state that the visible-sidebar workflow cannot be created on the current surface. Do not pretend another surface is equivalent.
 
-If project thread tools are unavailable, state that the visible-sidebar workflow cannot be created in this surface. Do not pretend that ordinary files, terminal tabs, or internal subagents are equivalent.
+Never archive, replace, or take over another commander or employee task without an explicit user instruction naming that action. If multiple commander tasks exist, report the conflict and ask which one should remain authoritative.
 
-Never archive, replace, or take over another commander task during bootstrap or recovery. If multiple commander tasks exist, report the conflict and ask the user which one to keep.
+## Match the local project
 
-## Bootstrap headquarters
-
-On the first activation in a project:
-
-1. Determine the active folder, project name, repository state, and project type with read-only inspection.
+1. Determine the active folder and repository root.
 2. Call `list_projects` and match the active folder to a saved local project.
-3. If no matching local project exists, stop before creating projectless employees. Ask the user to add or open the folder as a local Codex project, then invoke “我的总指挥” again.
-4. Rename the calling task to `总指挥｜<项目名>`.
-5. Search recent project tasks for employee titles before creating anything. Reuse a healthy existing roster and avoid duplicates.
-6. Create three to six standing employee tasks based on actual project needs. Use the smallest roster that covers distinct responsibilities.
-7. Wait until each registration turn finishes, because automatic title generation can overwrite an early rename.
-8. Rename each idle employee task to `员工NN｜<职责>｜<项目名>`.
-9. Call the thread-list or thread-read tool and verify every exact title and project path. Repeat the rename after the first turn if any title was overwritten.
-10. Return a concise roster stating each employee's responsibility and current state.
+3. If no match exists, stop before creating projectless employees. Ask the user to add or open the folder as a local Codex project and invoke the command again.
+4. Keep every employee under the matched project ID and verify its `cwd` or project path.
 
-Recommended roles are a menu, not a fixed organization chart:
+## Reconnoiter a new or long-running project
 
-- product and requirements;
-- research and source gathering;
-- architecture and integration;
-- implementation;
-- quality assurance and regression;
-- security, data, design, release, or operations when the project warrants them.
+Perform reconnaissance before choosing the commander identity or employee roles.
 
-Avoid decorative roles with no distinct deliverable. Never create two standing employees with the same ownership merely to increase apparent parallelism.
+1. Run the inventory script against the project root and store any full manifest only in a temporary directory, not in the project.
+2. Establish coverage of project-owned paths. Exclude VCS internals, dependencies, generated output, caches, and binaries from content ingestion while recording their presence.
+3. Never open likely secret or credential files merely for orientation. Record their paths as sensitive and continue.
+4. Read applicable `AGENTS.md` files, README and project documentation, manifests, build/test configuration, entry points, architecture files, current git status and diff, and recent commit history.
+5. For a manageable project, read all reasonably sized project-owned text source, test, config, and documentation files in batches.
+6. For a large project, build subsystem coverage and inspect representative entry points, current work, newest files, and high-impact modules. Delegate independent read-only coverage to employee task windows after the roster exists.
+7. State what was fully read, sampled, metadata-only, excluded, unreadable, or still unknown. Never claim “read every file” when exclusions or context limits prevented it.
 
-## Create employee tasks safely
+Do not flood headquarters with raw file contents. Retain a concise project map and evidence pointers.
 
-Create each standing employee task window with a registration prompt that includes:
+## Infer the commander charter
 
-- its role and boundaries;
-- the active project and working directory;
-- the rule that headquarters is its only coordinator;
+Before creating or reorganizing employees, write an internal charter containing:
+
+- project name and domain;
+- lifecycle stage and current objective;
+- primary deliverables and users;
+- technical or operational stack;
+- current work in progress;
+- major risks and verification surfaces;
+- the commander archetype, such as product-development commander, content-operations commander, data-analysis commander, film-production commander, or Codex-skill commander.
+
+Use the charter to choose roles. Do not force software-engineering roles onto a content, data, operations, media, or research project.
+
+## Rename and pin headquarters
+
+1. Rename the calling task to `总指挥｜<项目名>` without requiring a thread ID.
+2. Query project tasks for that exact title and exact project path.
+3. Identify the calling task by active status and most recent matching activity. If more than one task remains plausible, do not pin or rename another task; report the ambiguity.
+4. Call `set_thread_pinned` with the resolved calling thread ID.
+5. Verify the final title and successful pin operation. Repeat the title after automatic title generation if it was overwritten.
+
+Pin only headquarters automatically. Do not pin every employee.
+
+## Inventory and reorganize task windows
+
+1. List as many active and recent tasks as the tool supports, then filter by exact project path.
+2. Read recent summaries for each relevant task before changing its role.
+3. Classify each task as headquarters, structured employee, newly added or unstructured employee candidate, historical project task, or ambiguous task.
+4. Reuse healthy structured employees.
+5. Adopt a newly added or unstructured task only when its history clearly matches a needed role. Send a role configuration, then rename it to `员工NN｜<职责>｜<项目名>`.
+6. Preserve historical and ambiguous task titles. Mention them in the project map instead of silently repurposing them.
+7. Create new employee tasks only for missing responsibilities. Use the smallest roster that covers distinct deliverables.
+8. Never archive tasks during automatic reorganization.
+
+On later invocations, repeat this inventory, discover newly added task windows, reconcile them with the roster, refresh stale role context, and pin headquarters again.
+
+## Create and settle employee windows
+
+Create a registration prompt containing:
+
+- role, project, path, and commander title;
+- the project charter summary relevant to that role;
+- owned scope and boundaries;
 - the instruction not to modify files until assigned a bounded mission;
-- the structured report format from the reference;
+- the structured report format;
 - the requirement to preserve user changes and report blockers without widening authority.
 
-On `create_thread`, omit the model unless the user explicitly named a specific model, in accordance with the tool contract. Use the configured default for registration. Apply autonomous routing later on bounded dispatches through supported per-turn overrides.
+On `create_thread`, omit the model unless the user explicitly named a specific model, in accordance with the tool contract. Use the configured default for registration.
 
-Do not report an employee as created until all four facts are verified: its thread ID exists, its project path matches, its registration turn is no longer running, and its exact requested title is visible after automatic titling has finished.
+Wait until the registration turn finishes. Automatic title generation can overwrite an early rename. Rename the idle task, list or read it again, and verify all four facts before reporting it ready:
 
-Use a local project environment for standing employees that must share the current working tree. Permit only one concurrent writer for overlapping files. Use a worktree only for an isolated write mission that can safely start from the project's default branch. Do not request a `startingState` unless the user explicitly asked for that existing git state.
+- thread ID exists;
+- project path matches;
+- registration is no longer running;
+- exact requested title is visible.
+
+Use a local environment for standing employees that must share the current working tree. Permit only one concurrent writer for overlapping files. Use a worktree only for an isolated write mission that can safely start from the default branch. Do not request a starting state unless the user explicitly asked for it.
+
+## Assign employee model and reasoning profiles
+
+Inspect the callable thread-tool schema for models and supported reasoning efforts on the current host. Never invent a model ID or unsupported combination.
+
+For every adopted or newly created employee:
+
+1. Choose a baseline model profile and reasoning effort from the routing reference according to role, project risk, and expected work.
+2. Record the selected model and effort in the headquarters roster.
+3. Send a `ROLE CONFIGURATION` follow-up through `send_message_to_thread` using that model and reasoning override. Require a concise acknowledgement and read-only standby.
+4. Override the baseline again on later missions when task complexity changes.
+
+Avoid `ultra` for standing employees because it may create nested delegation and weaken the one-commander hierarchy. Use the lowest capability and reasoning effort that reliably meets the mission.
 
 ## Receive and decompose work
 
 When the user gives headquarters a mission:
 
-1. Restate the outcome internally as a testable completion condition.
-2. Inspect current project state before dispatching.
+1. Convert it into a testable completion condition.
+2. Refresh relevant project state before dispatching.
 3. Split work only where ownership, outputs, and validation can be separated.
 4. Assign one owner for every writable file or overlapping subsystem.
 5. Keep integration decisions in headquarters.
-6. Execute small or tightly coupled tasks directly when delegation would add more coordination than value.
-7. Dispatch independent read-heavy work in parallel. Serialize conflicting write-heavy work.
+6. Execute small or tightly coupled work directly when delegation would add more coordination than value.
+7. Dispatch independent read-heavy work in parallel and serialize conflicting write-heavy work.
 
-The user should not need to repeat context to employees. Headquarters must include all relevant context in every assignment.
-
-## Route models and reasoning
-
-Select model and reasoning per bounded dispatch, not by employee title alone. Follow the routing table and escalation rules in the reference.
-
-- Inspect the callable tool schema for currently supported models and reasoning combinations.
-- Never invent a model ID or unsupported reasoning level.
-- Use the lowest capability and reasoning effort that can reliably meet the task's stakes.
-- Escalate after ambiguity, failed verification, cross-system complexity, or high-risk judgment.
-- Avoid `ultra` for standing employees because it can create nested delegation and weaken the one-commander hierarchy. Reserve the deepest supported single-task setting for genuinely exceptional work.
-- Explain unusual high-cost routing briefly in the headquarters update.
-
-A model or reasoning override affects the dispatched turn or follow-up; it does not retroactively change work already running.
+Include all necessary context in every assignment. The user should not need to repeat project history to employees.
 
 ## Dispatch a bounded mission
 
@@ -140,53 +185,28 @@ Blocker protocol:
 Report format:
 ```
 
-Never send vague prompts such as “handle the backend” or “look around and improve things.” Give every employee a concrete outcome and a stop condition.
+Never send vague prompts such as “handle the backend” or “improve the project.” Give every employee a concrete output and stop condition.
 
-## Monitor and collect reports
+## Monitor, validate, and report
 
-Employees do not directly message across independent tasks. Implement “automatic reporting” operationally:
+Independent tasks do not directly message one another. Implement automatic reporting operationally:
 
-1. Require the employee to end each mission with the structured report.
-2. Use `read_thread` to inspect progress and completed results without opening the task.
+1. Require each employee to end with the structured report.
+2. Use `read_thread` to inspect progress and completed results.
 3. Read at meaningful intervals; do not busy-poll.
-4. If work lasts longer than roughly one minute, give the user a short headquarters update.
-5. Route clarifications or corrections back with `send_message_to_thread`.
-6. Reassign a blocked mission when another employee can solve it within existing authority.
-7. Ask the user only when a missing choice, permission, credential, or external change materially affects the result.
+4. Route corrections with `send_message_to_thread` using an appropriate model and reasoning override.
+5. Reassign a blocker only within existing authority.
+6. Ask the user when a missing choice, permission, credential, or external change materially affects the result.
 
-Keep standing employee tasks available for future work. Never archive an employee or headquarters task unless the user explicitly asks for that exact cleanup action.
+Headquarters owns final quality. Inspect diffs, tests, builds, rendered artifacts, browser state, documents, or other relevant surfaces. Reconcile conflicting conclusions and send failed work back with exact evidence.
 
-## Validate before reporting completion
+Report an integrated result containing:
 
-Do not forward employee claims verbatim. Headquarters owns final quality.
+- commander charter and project map on first activation;
+- reorganized and newly created employee roster;
+- each employee's baseline model and reasoning effort;
+- what is complete and how it was validated;
+- remaining risks, exclusions, or blockers;
+- decisions that truly require the user.
 
-- Inspect relevant diffs, files, commands, tests, rendered artifacts, or external state.
-- Reconcile conflicting employee conclusions.
-- Confirm that parallel changes do not overlap or regress each other.
-- Send failed work back with exact evidence and a narrower correction mission.
-- Mark the project mission complete only after the integrated outcome satisfies the user's definition of done.
-
-## Report to the user
-
-Lead with the integrated outcome. Then include only what helps the user decide or verify:
-
-- what is complete;
-- which employees contributed;
-- validation evidence;
-- remaining risks or blockers;
-- any decision that truly needs the user.
-
-Do not dump internal chain-of-thought, raw employee transcripts, repetitive status logs, or model-routing trivia. The user communicates with headquarters; headquarters absorbs the coordination cost.
-
-## Recover and reorganize
-
-When the user invokes the command again:
-
-1. Search for `总指挥｜<项目名>` and `员工NN｜...｜<项目名>` tasks.
-2. Inspect their recent status.
-3. Reuse compatible employees and restore their role context with a concise follow-up.
-4. Create a replacement only when the prior employee task is unusable; do not archive the prior task without explicit user instruction.
-5. If another commander task already exists, stop and ask which commander should remain authoritative.
-6. Tell the user what was recovered versus newly created.
-
-When the project changes phase, reorganize responsibilities explicitly. Do not silently grow the team without a new distinct need.
+Do not expose chain-of-thought, dump raw employee transcripts, or claim exhaustive project understanding without evidence.
