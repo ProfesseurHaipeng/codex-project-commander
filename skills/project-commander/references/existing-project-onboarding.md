@@ -17,7 +17,7 @@ Interpret “read the whole project” as evidence-backed coverage, not reckless
 1. Inventory all project-owned paths with `scripts/project_inventory.py`.
 2. Record excluded dependency, generated, cache, and VCS directories.
 3. Mark probable secrets and credentials as metadata-only unless the user explicitly authorizes reading them for the current task.
-4. Read project instructions and orientation files first: `AGENTS.md`, README files, architecture docs, manifests, build/test configuration, and entry points.
+4. Follow the host-declared project instruction hierarchy first, treating it as read-only policy, then inspect README files, architecture docs, manifests, build/test configuration, and entry points.
 5. Inspect git status, current diff, and recent commits to understand current work.
 6. For small and medium projects, read all relevant text source, config, tests, and docs in coherent batches.
 7. For large projects, partition by subsystem. Read entry points and current/high-risk paths first, then assign independent read-only coverage to employees.
