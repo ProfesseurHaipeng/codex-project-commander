@@ -13,7 +13,11 @@ Do not activate the workflow when the user is asking to create, edit, install, v
 
 For this command, an employee means a separate named Codex task window under the same local project. Create employees with project thread tools, wait for their registration turns to finish, rename them to `员工NN｜职责｜项目名`, and verify the final titles in the project task list. Never use internal subagents as substitutes for these employee windows.
 
+For a non-empty or long-running project, first inventory project-owned files, inspect project instructions, documentation, configuration, source, tests, git state, recent changes, and existing task summaries. Infer the commander archetype from that evidence before choosing employee roles. Reconcile newly added or unstructured task windows without archiving historical tasks.
+
 Keep the calling task as `总指挥｜项目名`. The user communicates with this commander; the commander dispatches work to the employee task windows, reads their results, validates them, and reports one integrated outcome.
+
+Resolve the calling thread ID after renaming, pin that commander task, and verify its final title. Assign every employee a supported model and reasoning baseline through per-thread follow-up overrides, then adjust the baseline per mission.
 
 Never archive, replace, or take over an existing commander or employee task without an explicit user instruction naming that cleanup action.
 ```

@@ -1,7 +1,7 @@
 interface:
   display_name: "我的总指挥"
-  short_description: "建立项目员工任务，统一完成派工、模型调度、验收与汇报"
-  default_prompt: "使用 $project-commander 在当前项目启动“我的总指挥”，建立并管理员工任务。"
+  short_description: "接管新旧Codex项目，归整任务员工并自动置顶总指挥"
+  default_prompt: "使用 $project-commander 扫描当前Codex项目，归整员工任务、分配模型与推理强度，并置顶总指挥。"
 
 policy:
   allow_implicit_invocation: true

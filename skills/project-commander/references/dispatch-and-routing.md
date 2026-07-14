@@ -2,6 +2,8 @@
 
 Use this reference when bootstrapping employees, composing assignments, or choosing per-turn model and reasoning settings.
 
+Treat the selected role profile as a baseline, not a permanent lock. Apply it with a `send_message_to_thread` model and reasoning override after the employee registration turn, then override it again when a mission warrants a different tier.
+
 ## Routing table
 
 Choose from models and reasoning efforts that the current thread tool schema explicitly supports. Prefer capability descriptions over hard-coded model names because availability changes by host and account.
@@ -28,6 +30,39 @@ Escalate one tier when any of these occurs:
 Downgrade when the remaining work is a deterministic correction, extraction, formatting pass, or already-specified follow-up.
 
 Do not use a stronger model merely because it is available. Do not use Max or equivalent deepest reasoning for routine work. Avoid Ultra in employee tasks so employees do not create an unmanaged second layer of workers.
+
+## Role baseline examples
+
+Choose only from models and efforts currently exposed by the tool schema.
+
+| Employee role | Default profile | Reasoning | Escalate when |
+| --- | --- | --- | --- |
+| inventory, extraction, formatting | Fast/economical | Low | classification is ambiguous or evidence conflicts |
+| research, product, documentation | Balanced | Medium | sources disagree or decisions affect project scope |
+| implementation, data analysis, visual production | Balanced/strong agentic | Medium or High | work crosses subsystems or validation fails |
+| architecture, security, final QA | Strongest suitable single-task | High or Extra-high | risk or irreversibility is exceptional |
+
+For a long-running project, route initial repository coverage to fast or balanced employees and reserve a stronger reviewer for synthesis and high-risk adjudication.
+
+## Role configuration follow-up
+
+Send this after registration or adoption, using the chosen model and reasoning override:
+
+```text
+ROLE CONFIGURATION
+Project:
+Commander:
+Employee title:
+Responsibility:
+Owned scope:
+Read-only context:
+Baseline model profile:
+Baseline reasoning effort:
+Escalation conditions:
+Report contract:
+
+Acknowledge the role in one concise report and remain read-only until a MISSION arrives. Do not create subagents or other persistent tasks.
+```
 
 ## Employee registration prompt
 
