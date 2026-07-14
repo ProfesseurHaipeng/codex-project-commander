@@ -1,6 +1,6 @@
 ---
 name: project-commander
-description: Turn a new or long-running local Codex project into a Project Commander workforce of named sidebar task windows with a dedicated token-governance employee, a durable task ledger, continuous event-driven dispatch, and economy, balanced, or efficiency modes. Use when the user says “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”; when an already-active commander receives “economy mode”, “balanced mode”, “normal mode”, or “efficiency mode”; or when the user asks Codex to inspect an existing project, organize tasks into employees, reduce repeated token waste, route work across Sol, Terra, and Luna or equivalent supported tiers, pin the commander, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
+description: Turn a new or long-running local Codex project into a Project Commander organization of named sidebar task-window employees with project-specific departments, non-overlapping roles, a dedicated token-governance employee, a durable organization chart and task ledger, continuous event-driven dispatch, and economy, balanced, or efficiency modes. Use when the user says “my project commander”, “project commander”, “commander”, “be the commander”, or “start commander”; when an already-active commander receives “economy mode”, “balanced mode”, “normal mode”, or “efficiency mode”; or when the user asks Codex to inspect an existing project, build an organization structure, organize tasks into employees, reduce repeated token waste, route work across Sol, Terra, and Luna or equivalent supported tiers, pin the commander, validate results, and report through one headquarters task. Employees must be persistent project task windows, never subagents.
 ---
 
 # Project Commander
@@ -25,6 +25,7 @@ Read these resources before acting:
 - [references/dispatch-and-routing.md](references/dispatch-and-routing.md) before assigning roles, model profiles, reasoning efforts, or missions.
 - [references/token-governance.md](references/token-governance.md) before creating the roster or dispatching work, and whenever repeated reading, duplicate work, or model overuse is suspected.
 - [references/continuous-dispatch.md](references/continuous-dispatch.md) whenever headquarters receives, resumes, monitors, or replans a multi-step mission, or the user selects an operating mode.
+- [references/organization-system.md](references/organization-system.md) after project reconnaissance and before creating, adopting, reorganizing, or reassigning employee task windows.
 
 Use [scripts/project_inventory.py](scripts/project_inventory.py) for a read-only project-wide file inventory when Python is available.
 
@@ -40,6 +41,7 @@ Treat the exact commands “my project commander”, “project commander”, �
 - rename, brief, steer, inspect, and consolidate employee tasks;
 - select supported per-employee model and reasoning baselines, then override them per mission when useful;
 - establish a standing token-governance employee that audits duplication, context reuse, model tier, reasoning effort, and stop-loss conditions;
+- create or reconcile a project-specific organization chart with departments, distinct role ownership, input/output contracts, and headquarters-mediated handoffs;
 - create or reconcile a local task ledger, run continuous event-driven dispatch, and immediately reuse suitable employees as work becomes ready;
 - use Balanced mode by default, or honor an Economy, Balanced/Normal, or Efficiency mode included with the activation command;
 - rename and pin the calling commander task;
@@ -99,6 +101,20 @@ Before creating or reorganizing employees, write an internal charter containing:
 
 Use the charter to choose roles. Do not force software-engineering roles onto a content, data, operations, media, or research project.
 
+## Establish the project organization
+
+Follow [the project organization system](references/organization-system.md) before choosing the roster.
+
+1. Copy [assets/ORG_CHART.template.md](assets/ORG_CHART.template.md) to `.codex/project-commander/ORG_CHART.md`, or reconcile the existing chart.
+2. Keep a two-layer structure: headquarters, one governance department containing Employee00, and the smallest useful set of project-specific delivery departments.
+3. Give every employee one department, one primary accountable outcome, one input/output contract, one writable scope, one validation responsibility, and capacity for one current mission.
+4. Run the role-distinctness test before creating or adopting a window. Consolidate roles that duplicate an outcome, overlap writable scope, lack a testable completion condition, or do not justify a persistent context.
+5. Map every task-ledger item to exactly one department and one accountable production employee. Optional reviewers remain read-only and do not share production ownership.
+6. Route all interdepartmental handoffs through headquarters using accepted outputs and concise evidence pointers. Employees do not reorganize or reassign one another.
+7. Scale delivery employees by useful work and operating mode; never create empty departments or filler roles.
+
+Keep the organization chart local and untracked by default. Headquarters is its only writer. Do not change `.gitignore`, commit it, or store secrets or raw transcripts without user authorization.
+
 ## Establish the Token Governance Department
 
 Create or reuse exactly one standing, read-only employee named `Employee00 | Token Governance and Model Routing | <project>`. This employee is mandatory for every roster and reports only to headquarters.
@@ -106,6 +122,7 @@ Create or reuse exactly one standing, read-only employee named `Employee00 | Tok
 Give this employee responsibility to:
 
 - review planned dispatches for duplicate work, repeated context, unnecessary fan-out, and oversized deliverables;
+- detect duplicate departments, overlapping primary outcomes, and roles whose persistent context does not justify their Token cost;
 - maintain the mission budget ledger defined in the token-governance reference;
 - recommend the lowest sufficient supported model tier and reasoning effort;
 - require a concrete escalation reason before moving from Luna to Terra, Terra to Sol, or medium to high reasoning;
@@ -132,7 +149,7 @@ Pin only headquarters automatically. Do not pin every employee.
 1. List as many active and recent tasks as the tool supports, then filter by exact project path.
 2. Read recent summaries for each relevant task before changing its role.
 3. Classify each task as headquarters, structured employee, newly added or unstructured employee candidate, historical project task, or ambiguous task.
-4. Reuse healthy structured employees.
+4. Map every structured employee to a department and verify that its primary outcome remains distinct before reusing it.
 5. Adopt a newly added or unstructured task only when its history clearly matches a needed role. Send a role configuration, then rename it to `EmployeeNN | <role> | <project>`.
 6. Preserve historical and ambiguous task titles. Mention them in the project map instead of silently repurposing them.
 7. Create new employee tasks only for missing responsibilities. Use the smallest roster that covers distinct deliverables.
@@ -145,7 +162,7 @@ On later invocations, repeat this inventory, discover newly added task windows, 
 
 Create a registration prompt containing:
 
-- role, project, path, and commander title;
+- department, primary role, project, path, and commander title;
 - the project charter summary relevant to that role;
 - owned scope and boundaries;
 - the instruction not to modify files until assigned a bounded mission;
@@ -202,10 +219,11 @@ For every multi-step mission, follow [continuous dispatch and durable task ledge
 
 1. Copy [assets/TASK_LEDGER.template.md](assets/TASK_LEDGER.template.md) to `.codex/project-commander/TASK_LEDGER.md` when no ledger exists.
 2. Record the full objective, completion condition, dependency graph, queue, owners, states, model/reasoning choices, checkpoints, evidence, and next actions before broad dispatch.
-3. Keep headquarters as the only ledger writer and reconcile the ledger with project evidence and employee windows whenever the mission resumes.
-4. Keep the ledger local and untracked by default. Do not change `.gitignore` or commit it without user authorization, and never store secrets or raw transcripts.
-5. Default to Balanced mode. Treat `economy mode`, `balanced mode`, `normal mode`, and `efficiency mode` as mode switches for the active commander. A mode-only switch must not create another commander or duplicate employees.
-6. Apply the selected mode's WIP, routing, and checkpoint posture without weakening authority, file ownership, validation, or stop-loss rules.
+3. Map every task row to the organization chart's department and accountable employee.
+4. Keep headquarters as the only ledger writer and reconcile the ledger with project evidence and employee windows whenever the mission resumes.
+5. Keep the ledger local and untracked by default. Do not change `.gitignore` or commit it without user authorization, and never store secrets or raw transcripts.
+6. Default to Balanced mode. Treat `economy mode`, `balanced mode`, `normal mode`, and `efficiency mode` as mode switches for the active commander. A mode-only switch must not create another commander or duplicate employees.
+7. Apply the selected mode's roster ceiling, WIP, routing, and checkpoint posture without weakening authority, file ownership, validation, or stop-loss rules.
 
 Allow combined activation such as `my project commander, efficiency mode`. Record every mode change in the ledger.
 
@@ -228,6 +246,7 @@ Send assignments with this contract:
 MISSION
 Objective:
 Why this matters:
+Department and accountable role:
 Owned scope/files:
 Read-only context:
 Allowed actions:
@@ -266,6 +285,7 @@ Apply a stop-loss after two substantially identical failed attempts or repeated 
 Report an integrated result containing:
 
 - commander charter and project map on first activation;
+- department tree, employee responsibility map, role gaps or overlaps, and handoff design;
 - reorganized and newly created employee roster;
 - each employee's baseline model and reasoning effort;
 - selected operating mode, queue state, immediately reassigned work, and any blocked or stalled tasks;

@@ -1,7 +1,7 @@
 interface:
   display_name: "Project Commander"
-  short_description: "Continuously route Codex tasks with a token-aware ledger"
-  default_prompt: "Use $project-commander to organize this Codex project, create its task ledger, continuously reassign completed employees, and run in Balanced mode."
+  short_description: "Build a Codex organization with distinct task-window roles"
+  default_prompt: "Use $project-commander to build this Codex project's organization chart, assign distinct task-window roles, create its task ledger, and run continuous dispatch in Balanced mode."
 
 policy:
   allow_implicit_invocation: true

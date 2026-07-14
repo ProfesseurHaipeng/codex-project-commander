@@ -17,7 +17,7 @@ Treat the selected role profile as a baseline, not a permanent lock. Apply it wi
 9. [Continuous dispatch handoff](#continuous-dispatch-handoff)
 10. [Conflict controls](#conflict-controls)
 
-Read [token-governance.md](token-governance.md) before approving dispatch and [continuous-dispatch.md](continuous-dispatch.md) before scheduling a multi-step mission.
+Read [organization-system.md](organization-system.md) before defining roles, [token-governance.md](token-governance.md) before approving dispatch, and [continuous-dispatch.md](continuous-dispatch.md) before scheduling a multi-step mission.
 
 ## GPT-5.6 routing table
 
@@ -70,7 +70,10 @@ ROLE CONFIGURATION
 Project:
 Commander:
 Employee title:
+Department:
 Responsibility:
+Primary accountable outcome:
+Accepted input and required output:
 Owned scope:
 Read-only context:
 Baseline model profile:
@@ -88,6 +91,8 @@ Acknowledge the role in one concise report and remain read-only until a MISSION 
 ```text
 You are EmployeeNN, responsible for <role> in project <project> at <path>.
 
+Department: <department>. Primary accountable outcome: <distinct outcome>. Accept only the defined input and return the defined output.
+
 Headquarters task `Commander | <project>` is your only coordinator. Do not ask the user for work and do not delegate to other persistent project tasks. Preserve existing user changes. Until headquarters sends a MISSION contract, perform read-only orientation only and do not edit files or external state.
 
 For every mission, stay within owned scope, validate the deliverable, and finish with the required EMPLOYEE REPORT. If blocked, report the exact blocker, evidence, safe attempts already made, and the smallest decision or permission needed. Do not widen scope on your own.
@@ -99,6 +104,7 @@ For every mission, stay within owned scope, validate the deliverable, and finish
 MISSION
 Objective: Identify why the checkout total differs between UI and API.
 Why this matters: Production totals must match before release.
+Department and accountable role: Quality and release / checkout validation.
 Owned scope/files: Read-only investigation of client/checkout and server/pricing.
 Read-only context: Current branch and existing logs.
 Allowed actions: Inspect files, run non-mutating tests, create notes in your task response.
@@ -160,6 +166,7 @@ Use the Economy, Balanced, or Efficiency mode WIP target defined in [continuous-
 ## Conflict controls
 
 - Give exactly one employee write ownership for a file or subsystem at a time.
+- Give every work item one department and one accountable production employee; use only read-only optional reviewers.
 - Prefer read-only reviewers for work another employee is writing.
 - If parallel writes are necessary, require disjoint file sets and an explicit integration owner.
 - Never let an employee merge, publish, deploy, delete, purchase, or message externally unless the user's mission separately authorizes it.

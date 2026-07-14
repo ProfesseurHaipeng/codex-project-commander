@@ -38,7 +38,7 @@ Infer the commander's identity from files, documentation, task history, and curr
 | SKILL.md, plugin manifest, MCP or agent tooling | Codex-skill commander | research, workflow architecture, authoring, validation, documentation, release |
 | policies, schedules, approvals, business records | Operations commander | process design, data, implementation, audit, QA, rollout |
 
-Use mixed roles for mixed projects. Choose three to six roles by distinct deliverables, not by a fixed template.
+Use mixed roles for mixed projects. Choose one to six delivery roles by distinct deliverables, operating mode, and ready work, not by a fixed template or quota.
 
 Add `Employee00 | Token Governance and Model Routing | project` to every archetype. It is a mandatory read-only control role and does not replace a deliverable-owning employee.
 
@@ -93,26 +93,28 @@ Do not archive, delete, merge, replace, or take over tasks during automatic reco
 2. Inventory files and current git state.
 3. Read project instructions, orientation docs, manifests, and current work.
 4. Infer the commander charter.
-5. Read and reconcile `.codex/project-commander/TASK_LEDGER.md`, or create it from the bundled template when work is multi-step.
-6. Rename and resolve headquarters, then pin it.
-7. Inventory and read relevant task windows.
-8. Reuse or create the single Token Governance employee before other expensive dispatches.
-9. Ask Token Governance to identify duplicate roles and propose the lowest sufficient model tier for each remaining role; headquarters applies the decision.
-10. Reuse, adopt, or create the smallest useful deliverable-owning roster.
-11. Settle titles after registration turns complete.
-12. Assign model, reasoning, token budget, and stop-loss baselines with `ROLE CONFIGURATION` follow-ups.
-13. Verify exact titles, project paths, role acknowledgements, and pin success.
-14. Report the charter, file coverage, task-ledger mode and queue, roster, model profiles, token controls, and exclusions.
+5. Read and reconcile `.codex/project-commander/ORG_CHART.md`, or create it from the bundled template.
+6. Read and reconcile `.codex/project-commander/TASK_LEDGER.md`, or create it from the bundled template when work is multi-step.
+7. Rename and resolve headquarters, then pin it.
+8. Inventory and read relevant task windows.
+9. Reuse or create the single Token Governance employee before other expensive dispatches.
+10. Ask Token Governance to identify duplicate departments and overlapping roles, then propose the lowest sufficient model tier for each distinct role; headquarters applies the decision.
+11. Reuse, adopt, or create the smallest useful deliverable-owning roster and map each employee to one department and one primary outcome.
+12. Settle titles after registration turns complete.
+13. Assign model, reasoning, token budget, and stop-loss baselines with `ROLE CONFIGURATION` follow-ups.
+14. Verify exact titles, project paths, role acknowledgements, organization mapping, and pin success.
+15. Report the charter, file coverage, organization chart, task-ledger mode and queue, roster, model profiles, token controls, and exclusions.
 
 ## Later activation sequence
 
 1. Refresh file inventory, git state, and recent project changes.
 2. Re-evaluate lifecycle stage and commander charter.
 3. Discover new and unstructured project tasks.
-4. Reconcile them without archiving or replacing history.
-5. Reconcile every non-terminal task-ledger entry with current files and employee windows, then recompute the ready queue.
-6. Ask Token Governance to audit repeated reads, duplicate missions, retries, and model overuse since the prior pass.
-7. Refresh employee roles and model baselines where responsibilities changed.
-8. Create only missing roles and avoid duplicate employees.
-9. Re-pin headquarters and verify its title.
-10. Resume continuous dispatch and report what changed, what was immediately reassigned, and what token waste was prevented.
+4. Reconcile the organization chart with current deliverables and task windows without archiving or replacing history.
+5. Resolve department gaps, role overlaps, and obsolete responsibilities before changing titles.
+6. Reconcile every non-terminal task-ledger entry with the current organization, files, and employee windows, then recompute the ready queue.
+7. Ask Token Governance to audit repeated reads, duplicate missions, overlapping roles, retries, and model overuse since the prior pass.
+8. Refresh employee roles and model baselines where responsibilities changed.
+9. Create only missing roles and avoid duplicate employees.
+10. Re-pin headquarters and verify its title.
+11. Resume continuous dispatch and report organization changes, immediate reassignments, and prevented Token waste.

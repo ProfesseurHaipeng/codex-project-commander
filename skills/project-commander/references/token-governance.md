@@ -94,14 +94,15 @@ For multi-step missions, write these fields into the matching row or event in `.
 Token Governance checks:
 
 1. Does an existing employee already hold the relevant context?
-2. Has the same question already been answered or tested?
-3. Can headquarters finish the work cheaper than opening another task?
-4. Can one mission replace several overlapping missions?
-5. Can the employee receive file pointers and a delta instead of full copied context?
-6. Is the deliverable smaller than the prompt without losing acceptance evidence?
-7. Is Luna sufficient? If not, is Terra sufficient?
-8. Is the requested reasoning effort higher than the task needs?
-9. What exact condition stops retries or triggers escalation?
+2. Does the organization chart already contain the same department outcome or an overlapping role?
+3. Has the same question already been answered or tested?
+4. Can headquarters finish the work cheaper than opening another task?
+5. Can one mission replace several overlapping missions?
+6. Can the employee receive file pointers and a delta instead of full copied context?
+7. Is the deliverable smaller than the prompt without losing acceptance evidence?
+8. Is Luna sufficient? If not, is Terra sufficient?
+9. Is the requested reasoning effort higher than the task needs?
+10. What exact condition stops retries or triggers escalation?
 
 Reject or consolidate a mission when these questions reveal avoidable duplication.
 

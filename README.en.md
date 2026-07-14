@@ -28,6 +28,8 @@ Long-running projects become difficult to coordinate when research, implementati
 - Inspect a new or established local Codex project before choosing its workforce.
 - Build an evidence-backed map of project-owned files, Git state, documentation, source, tests, and recent work.
 - Infer a project-specific commander archetype for product development, content operations, data analysis, film production, business operations, or Codex skill development.
+- Create `.codex/project-commander/ORG_CHART.md` with one governance department and project-specific delivery departments derived from real deliverables.
+- Give every employee window one department, primary accountable outcome, input/output contract, writable scope, and validation responsibility.
 - Reuse and organize suitable existing task windows without destroying historical tasks.
 - Create only the missing employee task windows under the same local project.
 - Assign each employee a supported model profile and reasoning-effort baseline.
@@ -135,6 +137,24 @@ Whenever any employee finishes, headquarters validates it, releases ownership, u
 | Efficiency | 3–5 non-conflicting missions | completion-triggered reassignment, Terra for bounded work, Sol still requires evidence |
 
 Headquarters is the ledger's only writer. The file stays local and untracked by default and stores no secrets, raw transcripts, or hidden reasoning. Progress monitoring uses evidence, promised checkpoints, blockers, and retries; it never labels a worker lazy without observable state.
+
+## Project organization system
+
+After reconnaissance, headquarters creates the organization before creating employees:
+
+```text
+Commander | project
+├─ Governance department
+│  └─ Employee00 | Token Governance and Model Routing | project
+└─ Project-specific delivery departments
+   ├─ Employee01 | distinct role | project
+   ├─ Employee02 | distinct role | project
+   └─ EmployeeNN | distinct role | project
+```
+
+Departments and roles follow the actual deliverables. A software project may use product planning, architecture and implementation, and quality and release; content may use research and strategy, editorial production, and visual/distribution QA; data may use data quality, analysis/modeling, and reporting/validation.
+
+Headquarters manages employees directly and does not create department-manager windows by default. Every work item belongs to one department and one production owner. Headquarters mediates cross-department handoffs using accepted outputs and compact evidence. The organization chart defines who owns what; the task ledger tracks what is happening now.
 
 ## Operating model
 

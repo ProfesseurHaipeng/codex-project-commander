@@ -38,6 +38,7 @@ Convert the objective into a dependency graph. Give every task:
 - a stable ID;
 - one testable outcome;
 - dependency IDs;
+- department and primary role from `.codex/project-commander/ORG_CHART.md`;
 - one owner or `unassigned`;
 - one state: `backlog`, `ready`, `running`, `blocked`, `review`, `done`, `cancelled`, or `stalled`;
 - owned files or scope;
@@ -69,7 +70,7 @@ After decomposing and recording the mission:
 
 1. Recompute all `ready` tasks.
 2. Rank them by dependency impact, user value, risk reduction, context reuse, and cheapest sufficient model.
-3. Fill available WIP slots with non-conflicting tasks.
+3. Fill available WIP slots with non-conflicting tasks whose department and role match an available employee.
 4. Send exactly one mission to each chosen employee and mark it `running`.
 5. Read employee tasks at completion events or meaningful checkpoints.
 6. On any employee completion, validate the reported evidence immediately.
@@ -109,9 +110,10 @@ At activation or resumption:
 
 1. read the existing ledger if present;
 2. compare every non-terminal entry with current files, Git state, and the matching task window;
-3. preserve stable task IDs and evidence pointers;
-4. correct stale owners, states, dependencies, and model assignments;
-5. add newly discovered user requirements and project work;
-6. recompute the ready queue and restart the event loop.
+3. compare its department and accountable role with the current organization chart;
+4. preserve stable task IDs and evidence pointers;
+5. correct stale departments, owners, states, dependencies, and model assignments;
+6. add newly discovered user requirements and project work;
+7. recompute the ready queue and restart the event loop.
 
 Treat the ledger as a compact operational index, not unquestionable truth. Current project evidence and verified task results win when they disagree with an old entry.
