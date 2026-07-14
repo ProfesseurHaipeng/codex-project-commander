@@ -1,6 +1,6 @@
 ---
 name: project-commander
-description: Turn a new or long-running local Codex project into a commander-led organization of named sidebar task-window employees with distinct departments, one Token Governance employee, a durable organization chart and task ledger, a completion-watchdog heartbeat, continuous re-dispatch, operating modes, and an optional modern Three Departments and Six Ministries profile. Use for “my project commander”, “project commander”, “commander”, “be the commander”, “start commander”; active-commander mode/profile switches or “continue monitoring”; existing-project onboarding; employee completion monitoring; Sol/Terra/Luna routing; Token reduction; pinning; validation; and one-headquarters reporting. Employees are persistent project task windows, never subagents.
+description: Turn a new or long-running local Codex project into a commander-led organization of named sidebar task-window employees with distinct departments, one Token Governance employee, a durable chart and ledger, a completion-watchdog heartbeat, idle-capacity audits, continuous re-dispatch, operating modes, and an optional Three Departments and Six Ministries profile. Use for “my project commander”, “project commander”, “commander”, “be the commander”, “start commander”; active-commander mode/profile switches or “continue monitoring”; existing-project onboarding; idle-window or completion monitoring; Sol/Terra/Luna routing; Token reduction; pinning; validation; and one-headquarters reporting. Employees are persistent project task windows, never subagents.
 license: MIT
 ---
 
@@ -281,10 +281,11 @@ Independent tasks do not directly message one another, and a desktop completion 
 2. Before the first production dispatch, create or reuse exactly one `Commander Watchdog | <project>` thread heartbeat. Never create a new standalone scheduled task for every scan.
 3. Let the heartbeat read only non-terminal employee windows in the ledger and deduplicate by task ID plus last processed report marker.
 4. On a new report, validate evidence, update the ledger, release ownership, recompute dependencies, and send the next mission in the same run.
-5. When nothing changed, send no employee message, repeat no summary, and invent no work. Pause the watchdog when no running, review, or ready work remains.
-6. If heartbeat capability is unavailable, monitor at low frequency while the current turn remains active and tell the user that cross-turn automatic handoff cannot be guaranteed. Never pretend reporting is automatic.
-7. Route corrections or new missions with `send_message_to_thread` using an appropriate model and reasoning override. Reassign blockers only within existing authority and ask the user when a material choice, permission, credential, or external change is missing.
-8. Keep Token Governance to compact preflight/postflight decisions; it does not own the watchdog.
+5. Audit every apparently idle employee against its window and ledger. Process unhandled reports first, resend a missed assignment, immediately dispatch compatible ready work, or mark the employee resting when no real work exists.
+6. When nothing changed, send no employee message, repeat no summary, and invent no work. Pause the watchdog when no running, review, or ready work remains.
+7. If heartbeat capability is unavailable, monitor at low frequency while the current turn remains active and tell the user that cross-turn automatic handoff cannot be guaranteed. Never pretend reporting is automatic.
+8. Route corrections or new missions with `send_message_to_thread` using an appropriate model and reasoning override. Reassign blockers only within existing authority and ask the user when a material choice, permission, credential, or external change is missing.
+9. Keep Token Governance to compact preflight/postflight decisions; it does not own the watchdog.
 
 If a promised checkpoint passes without evidence, send one concise check-in. If the next meaningful inspection still shows no progress, mark the task `stalled`, preserve its evidence, apply the stop-loss when applicable, and narrow, replan, downgrade, justify an escalation, or reassign it. Read-only standby is not stalled; waiting on a named dependency is blocked.
 

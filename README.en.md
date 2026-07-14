@@ -39,6 +39,7 @@ Long-running projects become difficult to coordinate when research, implementati
 - Persist the decomposed dependency graph and live queue in `.codex/project-commander/TASK_LEDGER.md` for recovery and completion audits.
 - Validate and reassign an employee immediately after that employee finishes instead of waiting for a global batch barrier.
 - Create one commander-thread heartbeat at first dispatch to discover employee completion, read and deduplicate reports, validate, and re-dispatch without assuming cross-window push delivery.
+- Audit apparently idle windows on every heartbeat: resend missed work, dispatch compatible ready work, or let them rest when no real work exists.
 - Offer Economy, Balanced/Normal, and Efficiency modes that tune WIP, model posture, checkpoint cadence, and Token use.
 - Rename tasks after registration settles, verify exact titles, and pin the commander.
 - Define mission scope, file ownership, forbidden actions, deliverables, validation, and completion criteria.
@@ -188,6 +189,8 @@ Commander | project
 ```
 
 Separate tasks do not push messages to one another automatically, and desktop notifications do not write reports into headquarters. The commander creates one `Commander Watchdog | project` heartbeat attached to itself, using a low, normal, or fast cadence according to the operating mode. It reads only non-terminal employees in the ledger, deduplicates new reports, validates them, updates the ledger, and immediately re-dispatches. It pauses when the queue ends or user input is required.
+
+The watchdog also verifies whether an apparently idle window is truly idle. It first rules out unprocessed completion, a missed mission message, still-running work, pending review, and dependency blockers. When role-compatible, dependency-complete, non-conflicting work fits the WIP limit, it dispatches immediately. Otherwise it marks the employee resting without standby chatter or filler work.
 
 If the current Codex surface lacks task-heartbeat or Scheduled capability, headquarters can only monitor at low frequency while its current turn stays active. It reports that cross-turn automatic handoff cannot be guaranteed instead of pretending employees can push results.
 

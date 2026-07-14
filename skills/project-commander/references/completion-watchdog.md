@@ -16,15 +16,16 @@ Before the first production dispatch, inspect the current tools for thread-heart
 Use a durable heartbeat prompt equivalent to:
 
 ```text
-This is a Project Commander completion-watchdog run. Inspect only employee tasks in this exact project's organization chart and task ledger that are running, in review, or blocked.
+This is a Project Commander completion-watchdog run. Inspect only employee tasks and the ready queue in this exact project's organization chart and task ledger.
 
 1. List relevant task windows under the exact project path.
 2. Read only the latest state and final employee report for employees named in the ledger.
 3. Compare task ID, evidence, and the last processed report marker; never process the same report twice.
 4. On completion or needs-review, validate evidence, update the ledger, release ownership, recompute dependencies, and immediately dispatch one compatible ready mission.
 5. On a blocker, resolve it only within existing authority; stop dispatch and report the smallest question when user input is required.
-6. When nothing materially changed, do not message employees, repeat summaries, or invent work.
-7. When no running, review, or ready work remains, pause this watchdog. Also pause when progress requires the user.
+6. Run an idle-capacity audit for every apparently idle employee: first exclude unprocessed reports, missed dispatch, blocked/review work, or a still-running turn; immediately dispatch compatible ready work, otherwise mark the employee resting with a reason.
+7. When nothing materially changed, do not message employees, repeat summaries, or invent work.
+8. When no running, review, or ready work remains, pause this watchdog. Also pause when progress requires the user.
 ```
 
 ## Completion detection and deduplication
@@ -52,12 +53,30 @@ When a new report is detected, complete this sequence in the same headquarters r
 
 Do not wait for unrelated employees. Do not ask employees to find their own next work, and never let employees dispatch one another.
 
+## Idle-capacity audit
+
+After processing new reports on every heartbeat, inspect apparently idle roster employees. Read the ledger and latest window state before classifying:
+
+| Classification | Observable evidence | Headquarters action |
+| --- | --- | --- |
+| Unprocessed completion | employee turn ended but the latest report is not accepted | process the report first; never overwrite the old mission |
+| Missed dispatch | the ledger assigns a current task but no successful mission-contract message exists | send it once immediately and record the dispatch result |
+| Still working | the window is running or has not reached its promised checkpoint | keep it working and do not double-dispatch |
+| In review | a report lacks evidence or validation is unfinished | validate or request evidence; do not send a new primary mission |
+| Blocked / dependency wait | a named blocker, dependency, permission, or external state exists | record blocked and resolve only within authority |
+| Dispatchable | no current mission and a role-compatible task is ready, approved, dependency-complete, non-conflicting, and allowed by WIP | send the mission contract in this run and mark it running |
+| Truly idle | no current mission and no compatible dispatchable task exists | mark `resting` with a reason; send no pointless standby message |
+
+Prioritize missed assigned work, tasks that unlock critical dependencies, tasks closest to retained employee context, higher user value, then the task that succeeds with the cheapest sufficient model.
+
+“Work exists” means real work that is ready, authorized, role-compatible, non-conflicting, and within the selected mode's WIP. Never invent filler, prematurely dispatch dependency- or governance-blocked work, or give production ownership to Token Governance merely to keep a window busy. True idle is not stalled or lazy. Resting employees do not count toward WIP and need no periodic wake-up message. Re-audit on the next heartbeat when work becomes ready or a dependency clears.
+
 ## Fallback when heartbeat capability is unavailable
 
 If the current surface lacks a heartbeat/automation tool, Scheduled is disabled, or creation fails:
 
 1. Never claim cross-task automatic reporting is active.
-2. While the current commander turn remains active, use the project task list and `read_thread` for low-frequency monitoring. Check at roughly 30–60 second intervals and back off when nothing changes.
+2. While the current commander turn remains active, use the project task list and `read_thread` for low-frequency monitoring and the same idle-capacity audit. Check at roughly 30–60 second intervals and back off when nothing changes.
 3. Read only non-terminal employees named in the ledger; do not scan unrelated historical tasks.
 4. Before the current turn ends, tell the user accurately that employee results remain in their windows and cross-turn automatic handoff cannot be guaranteed.
 5. Mark the watchdog `manual wake required` in the ledger. When the user says `continue monitoring`, collect every unprocessed report and resume dispatch without creating another commander.
