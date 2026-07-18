@@ -9,6 +9,7 @@ from typing import Protocol
 
 
 SUPPORTED_ACTIONS = frozenset({"add_label", "comment", "report", "close_waiting_issue"})
+SUPPORTED_POLICY_VERSION = 1
 MUTATING_ACTIONS = frozenset({"add_label", "comment", "close_waiting_issue"})
 APPLY_ACTIONS = MUTATING_ACTIONS | {"report"}
 REQUIRED_POLICY_KEYS = frozenset(
@@ -32,6 +33,9 @@ def validate_policy(policy: dict) -> list[str]:
     errors = [
         f"missing policy key: {key}" for key in sorted(REQUIRED_POLICY_KEYS - policy.keys())
     ]
+    version = policy.get("version")
+    if not isinstance(version, int) or isinstance(version, bool) or version != SUPPORTED_POLICY_VERSION:
+        errors.append(f"unsupported policy version: {version!r}")
     allowed_actions = policy.get("allowed_actions", [])
     if not isinstance(allowed_actions, list):
         return errors + ["allowed_actions must be a list"]
@@ -174,6 +178,14 @@ def build_plan(event: dict, policy: dict, now: datetime) -> dict:
                 }
             )
     elif event_name == "pull_request":
+        pull_request = event.get("pull_request", {})
+        if not isinstance(pull_request, dict):
+            plan["notices"].append("malformed_pull_request")
+            return plan
+        labels = _label_names(pull_request.get("labels", []))
+        if labels & set(policy["protected_labels"]):
+            plan["notices"].append("protected_label")
+            return plan
         if (
             "add_label" in policy["allowed_actions"]
             and any(rule["label"] == "needs-review" for rule in policy["label_rules"])
@@ -299,6 +311,19 @@ def _validate_apply_inputs(plan: dict, target: dict) -> None:
         raise PlanRejected("target max_mutations must be positive")
     if not isinstance(target.get("stale_enabled"), bool):
         raise PlanRejected("target stale_enabled must be boolean")
+    allowed_labels = target.get("allowed_labels")
+    if not isinstance(allowed_labels, list) or not all(
+        isinstance(label, str) and label for label in allowed_labels
+    ):
+        raise PlanRejected("target allowed_labels must be a string list")
+    request_details_marker = target.get("request_details_marker")
+    if not isinstance(request_details_marker, str) or not request_details_marker:
+        raise PlanRejected("target request_details_marker must be a string")
+    required_issue_sections = target.get("required_issue_sections")
+    if not isinstance(required_issue_sections, list) or not all(
+        isinstance(section, str) and section for section in required_issue_sections
+    ):
+        raise PlanRejected("target required_issue_sections must be a string list")
 
     action_types = [
         item.get("type") if isinstance(item, dict) else None for item in actions
@@ -325,13 +350,15 @@ def _validate_apply_inputs(plan: dict, target: dict) -> None:
             not isinstance(item.get("label"), str) or not item["label"].strip()
         ):
             raise PlanRejected("invalid add_label action")
-        if action_type == "comment" and (
-            not isinstance(item.get("marker"), str)
-            or not item["marker"].strip()
-            or not isinstance(item.get("body"), str)
-            or not item["body"].strip()
-        ):
-            raise PlanRejected("invalid comment action")
+        if action_type == "add_label" and item["label"] not in allowed_labels:
+            raise PlanRejected("label is not allowed by policy")
+        if action_type == "comment":
+            if not isinstance(item.get("marker"), str) or not isinstance(item.get("body"), str):
+                raise PlanRejected("invalid comment action")
+            if not _is_canonical_request_details_comment(
+                item, request_details_marker, required_issue_sections
+            ):
+                raise PlanRejected("comment is not canonical request-details form")
         if action_type == "report" and not (
             isinstance(item.get("format"), str) or isinstance(item.get("body"), str)
         ):
@@ -345,6 +372,23 @@ def _validate_apply_inputs(plan: dict, target: dict) -> None:
                 and item.get("protected") is False
             ):
                 raise PlanRejected("stale close preconditions failed")
+
+
+def _is_canonical_request_details_comment(
+    action: dict, marker: str, required_sections: list[str]
+) -> bool:
+    body = action.get("body")
+    prefix = f"<!-- {marker} -->\nPlease add: "
+    if action.get("marker") != marker or not isinstance(body, str):
+        return False
+    if not body.startswith(prefix) or not body.endswith("."):
+        return False
+    sections = body[len(prefix) : -1].split(", ")
+    if not sections or any(section not in required_sections for section in sections):
+        return False
+    return len(sections) == len(set(sections)) and sections == sorted(
+        sections, key=required_sections.index
+    )
 
 
 def apply_plan(plan: dict, client: GitHubClient, target: dict) -> list[dict]:
@@ -456,6 +500,17 @@ REDACTION_PATTERNS = (
     ),
     (re.compile(r"\bsk-[A-Za-z0-9_-]{8,}\b"), "[REDACTED_TOKEN]"),
     (
+        re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})\b"),
+        "[REDACTED_GITHUB_TOKEN]",
+    ),
+    (
+        re.compile(
+            r"\b(?:api[_ -]?key|access[_ -]?token|authorization|password|secret)\s*[:=]\s*(?:bearer\s+)?[^\s,;]+",
+            re.IGNORECASE,
+        ),
+        "[REDACTED_CREDENTIAL]",
+    ),
+    (
         re.compile(
             r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----",
             re.DOTALL,
@@ -565,13 +620,22 @@ def enrich_plan(
     if validate_policy(policy) or not policy["ai"].get("enabled", False):
         enriched["notices"].append("ai_disabled")
         return enriched
+    if "protected_label" in enriched["notices"]:
+        enriched["notices"].append("ai_skipped_protected_content")
+        return enriched
     if not token:
         enriched["notices"].append("ai_unavailable")
         return enriched
 
+    if not isinstance(event, dict):
+        enriched["notices"].append("ai_malformed_event")
+        return enriched
     target = event.get("issue") or event.get("pull_request") or {}
     if not isinstance(target, dict):
         enriched["notices"].append("ai_malformed_event")
+        return enriched
+    if _label_names(target.get("labels", [])) & set(policy["protected_labels"]):
+        enriched["notices"].append("ai_skipped_protected_content")
         return enriched
     source = f"{target.get('title', '')}\n{target.get('body', '')}"
     labels = [rule["label"] for rule in policy["label_rules"]]
@@ -661,6 +725,9 @@ def main(argv: list[str] | None = None) -> int:
             "repository": args.repository,
             "number": args.target_number,
             "allowed_actions": policy["allowed_actions"],
+            "allowed_labels": [rule["label"] for rule in policy["label_rules"]],
+            "request_details_marker": policy["markers"]["request_details"],
+            "required_issue_sections": policy["required_issue_sections"],
             "max_mutations": policy["max_mutations_per_run"],
             "stale_enabled": policy["stale"]["enabled"],
         }

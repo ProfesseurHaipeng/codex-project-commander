@@ -21,8 +21,8 @@ Do not submit changes that expand a workflow's permissions, run untrusted contri
 4. When changing either maintenance Skill, validate both packages:
 
    ```bash
-   python3 /Users/boris/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/automate-oss-maintenance
-   python3 /Users/boris/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/automate-oss-maintenance-zh
+   python3 path/to/quick_validate.py skills/automate-oss-maintenance
+   python3 path/to/quick_validate.py skills/automate-oss-maintenance-zh
    ```
 
 5. Explain the behavior, validation evidence, and any remaining external state that cannot be observed locally.

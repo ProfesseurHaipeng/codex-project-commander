@@ -1,6 +1,8 @@
+import io
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stderr
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
@@ -28,6 +30,12 @@ def load_json(relative: str) -> dict:
 
 
 class PolicyTests(unittest.TestCase):
+    def test_rejects_unsupported_policy_version(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["version"] = 999
+
+        self.assertIn("unsupported policy version: 999", validate_policy(policy))
+
     def test_rejects_unknown_action_type(self):
         policy = load_json("automation/maintenance-policy.json")
         policy["allowed_actions"].append("merge_pull_request")
@@ -97,6 +105,15 @@ class PlanningTests(unittest.TestCase):
         self.assertEqual([], plan["actions"])
         self.assertTrue(plan["notices"])
 
+    def test_unsupported_policy_version_returns_no_actions(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["version"] = 999
+
+        plan = build_plan(load_json("automation/fixtures/issue-opened.json"), policy, self.now)
+
+        self.assertEqual([], plan["actions"])
+        self.assertIn("unsupported policy version: 999", plan["notices"])
+
     def test_object_allowed_actions_fails_closed(self):
         policy = load_json("automation/maintenance-policy.json")
         policy["allowed_actions"] = {"add_label": True}
@@ -145,6 +162,24 @@ class PlanningTests(unittest.TestCase):
         plan = build_plan(event, self.policy, self.now)
         self.assertEqual([], plan["actions"])
         self.assertIn("malformed_issue", plan["notices"])
+
+    def test_malformed_pull_request_returns_no_actions(self):
+        event = load_json("automation/fixtures/pull-request-opened.json")
+        event["pull_request"] = []
+
+        plan = build_plan(event, self.policy, self.now)
+
+        self.assertEqual([], plan["actions"])
+        self.assertIn("malformed_pull_request", plan["notices"])
+
+    def test_protected_pull_request_returns_no_actions(self):
+        event = load_json("automation/fixtures/pull-request-opened.json")
+        event["pull_request"]["labels"] = ["security"]
+
+        plan = build_plan(event, self.policy, self.now)
+
+        self.assertEqual([], plan["actions"])
+        self.assertIn("protected_label", plan["notices"])
 
     def test_security_label_bypasses_ordinary_comments(self):
         event = load_json("automation/fixtures/issue-opened.json")
@@ -248,12 +283,15 @@ class PlanningTests(unittest.TestCase):
 class AiBoundaryTests(unittest.TestCase):
     def test_redacts_common_sensitive_patterns(self):
         source = (
-            "email person@example.com token sk-example123 "
+            "email person@example.com token sk-example123 ghp_abcdefghijklmnopqrstuvwxyz1234567890 "
+            "api_key=credential-value "
             "-----BEGIN PRIVATE KEY----- secret -----END PRIVATE KEY-----"
         )
         redacted = redact_public_text(source)
         self.assertNotIn("person@example.com", redacted)
         self.assertNotIn("sk-example123", redacted)
+        self.assertNotIn("ghp_abcdefghijklmnopqrstuvwxyz1234567890", redacted)
+        self.assertNotIn("credential-value", redacted)
         self.assertNotIn("BEGIN PRIVATE KEY", redacted)
 
     def test_redacts_private_key_crossing_truncation_boundary(self):
@@ -351,6 +389,30 @@ class AiBoundaryTests(unittest.TestCase):
         self.assertEqual([], enriched["actions"])
         self.assertIn("ai_no_valid_suggestion", enriched["notices"])
 
+    def test_protected_plan_skips_ai_transport_and_preserves_actions(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["ai"]["enabled"] = True
+        plan = {
+            "version": 1,
+            "event_key": "protected-001",
+            "actions": [{"type": "report", "format": "markdown"}],
+            "notices": ["protected_label"],
+        }
+
+        def transport(request, timeout):
+            self.fail("protected content must not be sent to OpenAI")
+
+        enriched = enrich_plan(
+            plan,
+            load_json("automation/fixtures/issue-opened.json"),
+            policy,
+            "test-token",
+            transport,
+        )
+
+        self.assertEqual(plan["actions"], enriched["actions"])
+        self.assertIn("ai_skipped_protected_content", enriched["notices"])
+
 
 def valid_apply_plan(*actions: dict) -> dict:
     return {
@@ -366,6 +428,9 @@ def valid_apply_target(**overrides: object) -> dict:
         "repository": "owner/repository",
         "number": 17,
         "allowed_actions": ["add_label", "comment", "report", "close_waiting_issue"],
+        "allowed_labels": ["bug", "documentation", "needs-review"],
+        "request_details_marker": "marker:v1",
+        "required_issue_sections": ["details"],
         "max_mutations": 2,
         "stale_enabled": True,
     }
@@ -397,7 +462,11 @@ class ApplyPlanTests(unittest.TestCase):
         client = FakeGitHubClient()
         plan = valid_apply_plan(
             {"type": "add_label", "label": "bug"},
-            {"type": "comment", "marker": "marker:v1", "body": "<!-- marker:v1 --> hi"},
+            {
+                "type": "comment",
+                "marker": "marker:v1",
+                "body": "<!-- marker:v1 -->\nPlease add: details.",
+            },
             {"type": "report", "format": "markdown"},
         )
         target = valid_apply_target(max_mutations=3)
@@ -420,7 +489,11 @@ class ApplyPlanTests(unittest.TestCase):
     def test_existing_marker_skips_comment_after_live_recheck(self):
         client = FakeGitHubClient({"marker:v1"})
         plan = valid_apply_plan(
-            {"type": "comment", "marker": "marker:v1", "body": "<!-- marker:v1 --> hi"}
+            {
+                "type": "comment",
+                "marker": "marker:v1",
+                "body": "<!-- marker:v1 -->\nPlease add: details.",
+            }
         )
 
         results = apply_plan(plan, client, valid_apply_target())
@@ -462,11 +535,35 @@ class ApplyPlanTests(unittest.TestCase):
 
         self.assertEqual([], client.calls)
 
+    def test_tampered_label_is_rejected_before_any_client_call(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan({"type": "add_label", "label": "maintainer-only"})
+
+        with self.assertRaisesRegex(PlanRejected, "label is not allowed by policy"):
+            apply_plan(plan, client, valid_apply_target())
+
+        self.assertEqual([], client.calls)
+
+    def test_tampered_comment_is_rejected_before_any_client_call(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan(
+            {"type": "comment", "marker": "other:v1", "body": "arbitrary body"}
+        )
+
+        with self.assertRaisesRegex(PlanRejected, "comment is not canonical request-details form"):
+            apply_plan(plan, client, valid_apply_target())
+
+        self.assertEqual([], client.calls)
+
     def test_mutation_budget_rejected_before_any_client_call(self):
         client = FakeGitHubClient()
         plan = valid_apply_plan(
             {"type": "add_label", "label": "bug"},
-            {"type": "comment", "marker": "m", "body": "body"},
+            {
+                "type": "comment",
+                "marker": "marker:v1",
+                "body": "<!-- marker:v1 -->\nPlease add: details.",
+            },
         )
 
         with self.assertRaisesRegex(PlanRejected, "mutation budget exceeded"):
@@ -478,7 +575,7 @@ class ApplyPlanTests(unittest.TestCase):
         client = FakeGitHubClient()
         plan = valid_apply_plan(
             {"type": "add_label", "label": "bug"},
-            {"type": "comment", "marker": "m"},
+            {"type": "comment", "marker": "marker:v1"},
         )
 
         with self.assertRaisesRegex(PlanRejected, "invalid comment action"):
@@ -691,10 +788,11 @@ class ApplyCliTests(unittest.TestCase):
             client_class.assert_not_called()
 
     def test_target_number_must_be_positive(self):
-        with self.assertRaises(SystemExit):
-            main(
-                [
-                    "apply", "--plan", "plan.json", "--policy", "policy.json",
-                    "--repository", "owner/repository", "--target-number", "0",
-                ]
-            )
+        with redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                main(
+                    [
+                        "apply", "--plan", "plan.json", "--policy", "policy.json",
+                        "--repository", "owner/repository", "--target-number", "0",
+                    ]
+                )

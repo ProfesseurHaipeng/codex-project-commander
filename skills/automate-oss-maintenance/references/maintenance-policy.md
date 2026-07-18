@@ -26,7 +26,7 @@ An allowlist is authorization, not documentation. Unknown action types, labels, 
 | `allowed_actions` | List containing only supported actions: `add_label`, `comment`, `report`, `close_waiting_issue` |
 | `label_rules` | List of `{label, keywords}` objects; both label and keyword entries are strings |
 | `required_issue_sections` | String list used to request missing issue evidence |
-| `markers` | Object containing string `request_details`; use stable hidden markers for idempotency |
+| `markers` | Object containing string `request_details`; it may include string `waiting_for_author`. When absent, the engine falls back to `oss-maintainer:waiting-for-author:v1`; use stable hidden markers for idempotency |
 | `protected_labels` | String list that stops ordinary automated handling |
 | `stale` | Object containing `enabled`, `minimum_days`, `required_label`, and `excluded_labels`; default `enabled` to false |
 | `max_mutations_per_run` | Positive integer; booleans are invalid |

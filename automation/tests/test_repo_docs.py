@@ -27,6 +27,11 @@ class RepositoryDocumentationContractTests(unittest.TestCase):
         self.assertIn("automated replies", text.lower())
         self.assertIn("human review", text.lower())
 
+    def test_contributing_uses_portable_skill_validator_guidance(self):
+        text = read_document(CONTRIBUTING)
+        self.assertNotIn("/Users/boris/", text)
+        self.assertIn("path/to/quick_validate.py", text)
+
     def test_security_names_private_vulnerability_reporting(self):
         self.assertIn("GitHub Private Vulnerability Reporting", read_document(SECURITY))
 
