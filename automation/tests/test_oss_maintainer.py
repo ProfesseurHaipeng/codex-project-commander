@@ -1,12 +1,18 @@
 import json
+import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 from automation.oss_maintainer import (
+    GitHubRestClient,
+    PlanRejected,
+    apply_plan,
     build_openai_request,
     build_plan,
     enrich_plan,
+    main,
     parse_openai_result,
     redact_public_text,
     validate_ai_suggestion,
@@ -187,6 +193,13 @@ class PlanningTests(unittest.TestCase):
         enabled_policy["stale"]["enabled"] = True
         enabled_plan = build_plan(event, enabled_policy, self.now)
         self.assertIn("close_waiting_issue", [item["type"] for item in enabled_plan["actions"]])
+        close_action = next(
+            item for item in enabled_plan["actions"] if item["type"] == "close_waiting_issue"
+        )
+        self.assertEqual(
+            {"eligible": True, "marker_present": True, "protected": False},
+            {key: close_action[key] for key in ("eligible", "marker_present", "protected")},
+        )
 
         for field, value in (
             ("labels", []),
@@ -327,3 +340,337 @@ class AiBoundaryTests(unittest.TestCase):
         )
         self.assertEqual([], enriched["actions"])
         self.assertIn("ai_no_valid_suggestion", enriched["notices"])
+
+
+def valid_apply_plan(*actions: dict) -> dict:
+    return {
+        "version": 1,
+        "event_key": "delivery-001",
+        "actions": list(actions),
+        "notices": [],
+    }
+
+
+def valid_apply_target(**overrides: object) -> dict:
+    target = {
+        "repository": "owner/repository",
+        "number": 17,
+        "allowed_actions": ["add_label", "comment", "report", "close_waiting_issue"],
+        "max_mutations": 2,
+        "stale_enabled": True,
+    }
+    target.update(overrides)
+    return target
+
+
+class FakeGitHubClient:
+    def __init__(self, markers: set[str] | None = None):
+        self.markers = markers or set()
+        self.calls = []
+
+    def has_marker(self, repository, number, marker):
+        self.calls.append(("has_marker", repository, number, marker))
+        return marker in self.markers
+
+    def add_labels(self, repository, number, labels):
+        self.calls.append(("add_labels", repository, number, labels))
+
+    def create_comment(self, repository, number, body):
+        self.calls.append(("create_comment", repository, number, body))
+
+    def close_issue(self, repository, number):
+        self.calls.append(("close_issue", repository, number))
+
+
+class ApplyPlanTests(unittest.TestCase):
+    def test_applies_allowlisted_actions_and_keeps_report_local(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan(
+            {"type": "add_label", "label": "bug"},
+            {"type": "comment", "marker": "marker:v1", "body": "<!-- marker:v1 --> hi"},
+            {"type": "report", "format": "markdown"},
+        )
+        target = valid_apply_target(max_mutations=3)
+
+        results = apply_plan(plan, client, target)
+
+        self.assertEqual(
+            ["add_labels", "has_marker", "create_comment"],
+            [call[0] for call in client.calls],
+        )
+        self.assertEqual(
+            [
+                {"type": "add_label", "status": "applied"},
+                {"type": "comment", "status": "applied"},
+                {"type": "report", "status": "reported"},
+            ],
+            results,
+        )
+
+    def test_existing_marker_skips_comment_after_live_recheck(self):
+        client = FakeGitHubClient({"marker:v1"})
+        plan = valid_apply_plan(
+            {"type": "comment", "marker": "marker:v1", "body": "<!-- marker:v1 --> hi"}
+        )
+
+        results = apply_plan(plan, client, valid_apply_target())
+
+        self.assertEqual(["has_marker"], [call[0] for call in client.calls])
+        self.assertEqual(
+            [{"type": "comment", "status": "skipped_existing_marker"}], results
+        )
+
+    def test_unknown_action_rejected_before_any_client_call(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan({"type": "merge_pull_request"})
+
+        with self.assertRaisesRegex(PlanRejected, "unknown action types"):
+            apply_plan(plan, client, valid_apply_target())
+
+        self.assertEqual([], client.calls)
+
+    def test_disallowed_action_rejected_before_any_client_call(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan({"type": "comment", "marker": "m", "body": "body"})
+
+        with self.assertRaisesRegex(PlanRejected, "unknown action types"):
+            apply_plan(plan, client, valid_apply_target(allowed_actions=["report"]))
+
+        self.assertEqual([], client.calls)
+
+    def test_mutation_budget_rejected_before_any_client_call(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan(
+            {"type": "add_label", "label": "bug"},
+            {"type": "comment", "marker": "m", "body": "body"},
+        )
+
+        with self.assertRaisesRegex(PlanRejected, "mutation budget exceeded"):
+            apply_plan(plan, client, valid_apply_target(max_mutations=1))
+
+        self.assertEqual([], client.calls)
+
+    def test_malformed_later_action_rejected_before_earlier_mutation(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan(
+            {"type": "add_label", "label": "bug"},
+            {"type": "comment", "marker": "m"},
+        )
+
+        with self.assertRaisesRegex(PlanRejected, "invalid comment action"):
+            apply_plan(plan, client, valid_apply_target())
+
+        self.assertEqual([], client.calls)
+
+    def test_close_requires_all_deterministic_preconditions(self):
+        for missing_or_false in ("eligible", "marker_present", "protected"):
+            with self.subTest(field=missing_or_false):
+                action = {
+                    "type": "close_waiting_issue",
+                    "eligible": True,
+                    "marker_present": True,
+                    "protected": False,
+                }
+                if missing_or_false == "protected":
+                    action[missing_or_false] = True
+                else:
+                    action[missing_or_false] = False
+                client = FakeGitHubClient()
+
+                with self.assertRaisesRegex(PlanRejected, "stale close preconditions failed"):
+                    apply_plan(valid_apply_plan(action), client, valid_apply_target())
+
+                self.assertEqual([], client.calls)
+
+    def test_disabled_revalidated_stale_policy_rejects_tampered_eligible_close(self):
+        client = FakeGitHubClient()
+        tampered = valid_apply_plan(
+            {
+                "type": "close_waiting_issue",
+                "eligible": True,
+                "marker_present": True,
+                "protected": False,
+            }
+        )
+
+        with self.assertRaisesRegex(PlanRejected, "stale closure disabled by policy"):
+            apply_plan(tampered, client, valid_apply_target(stale_enabled=False))
+
+        self.assertEqual([], client.calls)
+
+    def test_protected_close_rejected_before_earlier_label_mutation(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan(
+            {"type": "add_label", "label": "bug"},
+            {
+                "type": "close_waiting_issue",
+                "eligible": True,
+                "marker_present": True,
+                "protected": True,
+            },
+        )
+
+        with self.assertRaisesRegex(PlanRejected, "stale close preconditions failed"):
+            apply_plan(plan, client, valid_apply_target())
+
+        self.assertEqual([], client.calls)
+
+    def test_valid_close_calls_issue_close_once(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan(
+            {
+                "type": "close_waiting_issue",
+                "eligible": True,
+                "marker_present": True,
+                "protected": False,
+            }
+        )
+
+        results = apply_plan(plan, client, valid_apply_target())
+
+        self.assertEqual([("close_issue", "owner/repository", 17)], client.calls)
+        self.assertEqual([{"type": "close_waiting_issue", "status": "applied"}], results)
+
+    def test_malformed_plan_is_rejected_before_client_call(self):
+        client = FakeGitHubClient()
+
+        with self.assertRaisesRegex(PlanRejected, "plan actions must be a list"):
+            apply_plan({"version": 1, "event_key": "x", "actions": {}}, client, valid_apply_target())
+
+        self.assertEqual([], client.calls)
+
+
+class GitHubRestClientTests(unittest.TestCase):
+    class Response:
+        def __init__(self, payload, link=""):
+            self.payload = json.dumps(payload).encode("utf-8")
+            self.headers = {"Link": link}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return self.payload
+
+    def test_marker_lookup_follows_pagination(self):
+        requests = []
+        responses = iter(
+            [
+                self.Response(
+                    [{"body": "first"}],
+                    '<https://api.github.com/repos/owner/repository/issues/17/comments?per_page=100&page=2>; rel="next"',
+                ),
+                self.Response([{"body": "contains marker:v1"}]),
+            ]
+        )
+
+        def transport(request, timeout):
+            requests.append(request)
+            return next(responses)
+
+        client = GitHubRestClient("secret-token", transport=transport)
+
+        self.assertTrue(client.has_marker("owner/repository", 17, "marker:v1"))
+        self.assertEqual(2, len(requests))
+        self.assertTrue(all(request.get_method() == "GET" for request in requests))
+
+    def test_mutation_methods_use_only_issue_metadata_endpoints(self):
+        requests = []
+
+        def transport(request, timeout):
+            requests.append(request)
+            return self.Response({})
+
+        client = GitHubRestClient("secret-token", transport=transport)
+        client.add_labels("owner/repository", 17, ["bug"])
+        client.create_comment("owner/repository", 17, "body")
+        client.close_issue("owner/repository", 17)
+
+        self.assertEqual(["POST", "POST", "PATCH"], [item.get_method() for item in requests])
+        self.assertEqual(
+            [
+                "https://api.github.com/repos/owner/repository/issues/17/labels",
+                "https://api.github.com/repos/owner/repository/issues/17/comments",
+                "https://api.github.com/repos/owner/repository/issues/17",
+            ],
+            [item.full_url for item in requests],
+        )
+        self.assertEqual({"labels": ["bug"]}, json.loads(requests[0].data))
+        self.assertEqual({"body": "body"}, json.loads(requests[1].data))
+        self.assertEqual({"state": "closed"}, json.loads(requests[2].data))
+
+
+class ApplyCliTests(unittest.TestCase):
+    def write_json(self, directory: str, name: str, value: dict) -> Path:
+        path = Path(directory) / name
+        path.write_text(json.dumps(value), encoding="utf-8")
+        return path
+
+    def test_malformed_policy_fails_before_client_construction(self):
+        with tempfile.TemporaryDirectory() as directory:
+            plan_path = self.write_json(directory, "plan.json", valid_apply_plan())
+            policy_path = self.write_json(directory, "policy.json", {"version": 1})
+            with patch("automation.oss_maintainer.GitHubRestClient") as client_class:
+                with self.assertRaisesRegex(PlanRejected, "invalid policy"):
+                    main(
+                        [
+                            "apply", "--plan", str(plan_path), "--policy", str(policy_path),
+                            "--repository", "owner/repository", "--target-number", "17",
+                        ]
+                    )
+            client_class.assert_not_called()
+
+    def test_malformed_plan_fails_before_client_construction(self):
+        with tempfile.TemporaryDirectory() as directory:
+            plan_path = self.write_json(directory, "plan.json", {"version": 1, "actions": {}})
+            policy_path = self.write_json(
+                directory, "policy.json", load_json("automation/maintenance-policy.json")
+            )
+            with patch("automation.oss_maintainer.GitHubRestClient") as client_class:
+                with self.assertRaisesRegex(PlanRejected, "plan actions must be a list"):
+                    main(
+                        [
+                            "apply", "--plan", str(plan_path), "--policy", str(policy_path),
+                            "--repository", "owner/repository", "--target-number", "17",
+                        ]
+                    )
+            client_class.assert_not_called()
+
+    def test_disabled_stale_policy_rejects_tampered_close_before_client_construction(self):
+        with tempfile.TemporaryDirectory() as directory:
+            plan_path = self.write_json(
+                directory,
+                "plan.json",
+                valid_apply_plan(
+                    {
+                        "type": "close_waiting_issue",
+                        "eligible": True,
+                        "marker_present": True,
+                        "protected": False,
+                    }
+                ),
+            )
+            policy_path = self.write_json(
+                directory, "policy.json", load_json("automation/maintenance-policy.json")
+            )
+            with patch("automation.oss_maintainer.GitHubRestClient") as client_class:
+                with self.assertRaisesRegex(PlanRejected, "stale closure disabled by policy"):
+                    main(
+                        [
+                            "apply", "--plan", str(plan_path), "--policy", str(policy_path),
+                            "--repository", "owner/repository", "--target-number", "17",
+                        ]
+                    )
+            client_class.assert_not_called()
+
+    def test_target_number_must_be_positive(self):
+        with self.assertRaises(SystemExit):
+            main(
+                [
+                    "apply", "--plan", "plan.json", "--policy", "policy.json",
+                    "--repository", "owner/repository", "--target-number", "0",
+                ]
+            )

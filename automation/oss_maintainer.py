@@ -5,10 +5,12 @@ import re
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Protocol
 
 
 SUPPORTED_ACTIONS = frozenset({"add_label", "comment", "report", "close_waiting_issue"})
 MUTATING_ACTIONS = frozenset({"add_label", "comment", "close_waiting_issue"})
+APPLY_ACTIONS = MUTATING_ACTIONS | {"report"}
 REQUIRED_POLICY_KEYS = frozenset(
     {
         "version",
@@ -182,6 +184,9 @@ def build_plan(event: dict, policy: dict, now: datetime) -> dict:
                 {
                     "type": "close_waiting_issue",
                     "reason": "stale_waiting_for_author",
+                    "eligible": True,
+                    "marker_present": True,
+                    "protected": False,
                 }
             )
     plan["actions"] = _within_mutation_budget(
@@ -235,6 +240,208 @@ def _within_mutation_budget(actions: list[dict], budget: int) -> list[dict]:
             mutation_count += 1
         accepted.append(action)
     return accepted
+
+
+class PlanRejected(ValueError):
+    pass
+
+
+class GitHubClient(Protocol):
+    def has_marker(self, repository: str, number: int, marker: str) -> bool:
+        raise NotImplementedError
+
+    def add_labels(self, repository: str, number: int, labels: list[str]) -> None:
+        raise NotImplementedError
+
+    def create_comment(self, repository: str, number: int, body: str) -> None:
+        raise NotImplementedError
+
+    def close_issue(self, repository: str, number: int) -> None:
+        raise NotImplementedError
+
+
+def _validate_apply_inputs(plan: dict, target: dict) -> None:
+    if not isinstance(plan, dict):
+        raise PlanRejected("plan must be an object")
+    actions = plan.get("actions")
+    if not isinstance(actions, list):
+        raise PlanRejected("plan actions must be a list")
+    if plan.get("version") != 1:
+        raise PlanRejected("unsupported plan version")
+    if not isinstance(plan.get("event_key"), str):
+        raise PlanRejected("plan event_key must be a string")
+    if "notices" in plan and not isinstance(plan["notices"], list):
+        raise PlanRejected("plan notices must be a list")
+    if not isinstance(target, dict):
+        raise PlanRejected("target must be an object")
+    repository = target.get("repository")
+    if not isinstance(repository, str) or not re.fullmatch(
+        r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository
+    ):
+        raise PlanRejected("invalid repository")
+    number = target.get("number")
+    if not isinstance(number, int) or isinstance(number, bool) or number < 1:
+        raise PlanRejected("target number must be positive")
+    allowed_actions = target.get("allowed_actions")
+    if not isinstance(allowed_actions, list) or not all(
+        isinstance(action, str) for action in allowed_actions
+    ):
+        raise PlanRejected("target allowed_actions must be a string list")
+    max_mutations = target.get("max_mutations")
+    if (
+        not isinstance(max_mutations, int)
+        or isinstance(max_mutations, bool)
+        or max_mutations < 1
+    ):
+        raise PlanRejected("target max_mutations must be positive")
+    if not isinstance(target.get("stale_enabled"), bool):
+        raise PlanRejected("target stale_enabled must be boolean")
+
+    action_types = [
+        item.get("type") if isinstance(item, dict) else None for item in actions
+    ]
+    policy_allowed = set(allowed_actions)
+    unknown = [
+        action_type
+        for action_type in action_types
+        if action_type not in APPLY_ACTIONS or action_type not in policy_allowed
+    ]
+    if unknown:
+        raise PlanRejected(f"unknown action types: {unknown}")
+    mutations = [
+        item for item in actions if item.get("type") in MUTATING_ACTIONS
+    ]
+    if len(mutations) > max_mutations:
+        raise PlanRejected("mutation budget exceeded")
+
+    for item in actions:
+        action_type = item["type"]
+        if action_type == "add_label" and (
+            not isinstance(item.get("label"), str) or not item["label"].strip()
+        ):
+            raise PlanRejected("invalid add_label action")
+        if action_type == "comment" and (
+            not isinstance(item.get("marker"), str)
+            or not item["marker"].strip()
+            or not isinstance(item.get("body"), str)
+            or not item["body"].strip()
+        ):
+            raise PlanRejected("invalid comment action")
+        if action_type == "report" and not (
+            isinstance(item.get("format"), str) or isinstance(item.get("body"), str)
+        ):
+            raise PlanRejected("invalid report action")
+        if action_type == "close_waiting_issue":
+            if not target["stale_enabled"]:
+                raise PlanRejected("stale closure disabled by policy")
+            if not (
+                item.get("eligible") is True
+                and item.get("marker_present") is True
+                and item.get("protected") is False
+            ):
+                raise PlanRejected("stale close preconditions failed")
+
+
+def apply_plan(plan: dict, client: GitHubClient, target: dict) -> list[dict]:
+    _validate_apply_inputs(plan, target)
+    repository = target["repository"]
+    number = target["number"]
+    results = []
+    for item in plan["actions"]:
+        action_type = item["type"]
+        if action_type == "add_label":
+            client.add_labels(repository, number, [item["label"]])
+        elif action_type == "comment":
+            marker = item["marker"]
+            if client.has_marker(repository, number, marker):
+                results.append(
+                    {"type": "comment", "status": "skipped_existing_marker"}
+                )
+                continue
+            client.create_comment(repository, number, item["body"])
+        elif action_type == "close_waiting_issue":
+            client.close_issue(repository, number)
+        results.append(
+            {
+                "type": action_type,
+                "status": "reported" if action_type == "report" else "applied",
+            }
+        )
+    return results
+
+
+class GitHubRestClient:
+    def __init__(self, token: str, transport=urllib.request.urlopen):
+        if not token:
+            raise PlanRejected("GH_TOKEN is required")
+        self._token = token
+        self._transport = transport
+
+    def _request(self, url: str, method: str = "GET", payload: dict | None = None):
+        data = None if payload is None else json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(
+            url,
+            data=data,
+            headers={
+                "Authorization": f"Bearer {self._token}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+                "Content-Type": "application/json",
+            },
+            method=method,
+        )
+        with self._transport(request, timeout=20) as response:
+            raw = response.read()
+            result = json.loads(raw.decode("utf-8")) if raw else None
+            return result, response.headers.get("Link", "")
+
+    @staticmethod
+    def _next_link(link_header: str) -> str | None:
+        for item in link_header.split(","):
+            match = re.match(r'\s*<([^>]+)>;\s*rel="([^"]+)"', item)
+            if match and match.group(2) == "next":
+                return match.group(1)
+        return None
+
+    def has_marker(self, repository: str, number: int, marker: str) -> bool:
+        url = (
+            f"https://api.github.com/repos/{repository}/issues/{number}/comments"
+            "?per_page=100&page=1"
+        )
+        while url:
+            comments, link_header = self._request(url)
+            if not isinstance(comments, list):
+                raise PlanRejected("GitHub comments response must be a list")
+            if any(
+                isinstance(comment, dict)
+                and isinstance(comment.get("body"), str)
+                and marker in comment["body"]
+                for comment in comments
+            ):
+                return True
+            url = self._next_link(link_header)
+        return False
+
+    def add_labels(self, repository: str, number: int, labels: list[str]) -> None:
+        self._request(
+            f"https://api.github.com/repos/{repository}/issues/{number}/labels",
+            "POST",
+            {"labels": labels},
+        )
+
+    def create_comment(self, repository: str, number: int, body: str) -> None:
+        self._request(
+            f"https://api.github.com/repos/{repository}/issues/{number}/comments",
+            "POST",
+            {"body": body},
+        )
+
+    def close_issue(self, repository: str, number: int) -> None:
+        self._request(
+            f"https://api.github.com/repos/{repository}/issues/{number}",
+            "PATCH",
+            {"state": "closed"},
+        )
 
 
 REDACTION_PATTERNS = (
@@ -399,6 +606,13 @@ def parse_now(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
 
 
+def positive_integer(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return parsed
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     commands = parser.add_subparsers(dest="command", required=True)
@@ -413,6 +627,11 @@ def main(argv: list[str] | None = None) -> int:
     enrich_parser.add_argument("--event", type=Path, required=True)
     enrich_parser.add_argument("--policy", type=Path, required=True)
     enrich_parser.add_argument("--output", type=Path, required=True)
+    apply_parser = commands.add_parser("apply")
+    apply_parser.add_argument("--plan", type=Path, required=True)
+    apply_parser.add_argument("--policy", type=Path, required=True)
+    apply_parser.add_argument("--repository", required=True)
+    apply_parser.add_argument("--target-number", type=positive_integer, required=True)
     args = parser.parse_args(argv)
 
     if args.command == "plan":
@@ -420,16 +639,31 @@ def main(argv: list[str] | None = None) -> int:
         if args.event_name:
             event["event_name"] = args.event_name
         plan = build_plan(event, load_json(args.policy), parse_now(args.now))
-    else:
+    elif args.command == "enrich":
         plan = enrich_plan(
             load_json(args.plan),
             load_json(args.event),
             load_json(args.policy),
             os.environ.get("OPENAI_API_KEY"),
         )
-    args.output.write_text(
-        json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    else:
+        policy = load_json(args.policy)
+        policy_errors = validate_policy(policy)
+        if policy_errors:
+            raise PlanRejected(f"invalid policy: {'; '.join(policy_errors)}")
+        plan = load_json(args.plan)
+        target = {
+            "repository": args.repository,
+            "number": args.target_number,
+            "allowed_actions": policy["allowed_actions"],
+            "max_mutations": policy["max_mutations_per_run"],
+            "stale_enabled": policy["stale"]["enabled"],
+        }
+        _validate_apply_inputs(plan, target)
+        client = GitHubRestClient(os.environ.get("GH_TOKEN", ""))
+        print(json.dumps(apply_plan(plan, client, target), ensure_ascii=False))
+        return 0
+    args.output.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 0
 
 
