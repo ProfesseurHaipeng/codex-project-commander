@@ -282,6 +282,21 @@ OpenAI still recommends environment variables and prohibits embedding keys in cl
     └── project-commander-zh/    # 中文 SKILL
 ```
 
+## Automated OSS maintenance
+
+This repository includes two independently installable maintenance Skills. Choose the edition that matches the working language:
+
+| Edition | Skill path |
+| --- | --- |
+| English | `skills/automate-oss-maintenance` |
+| Chinese | `skills/automate-oss-maintenance-zh` |
+
+The maintenance plan is deterministic and policy-based through `automation/maintenance-policy.json`, so it works without an API key. Optional OpenAI enrichment reads only the repository Secret named `OPENAI_API_KEY`; configure it only when a maintainer chooses to use that optional enrichment.
+
+The workflow files in this repository are local configuration. A maintainer must separately verify whether they have been committed, pushed, and enabled. Permissions are split by responsibility: issue triage and trusted-default-branch PR metadata may make only policy-allowlisted labels or comments; untrusted PR checks are content-read-only and receive no Secret; the scheduled job only builds a maintenance report. Automation does not merge or approve PRs, create releases, change repository settings or permissions, create Secrets, or delete branches or source.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution rules and [SECURITY.md](SECURITY.md) for the private vulnerability-reporting status.
+
 ## Official references
 
 - [OpenAI Codex Agent Skills](https://developers.openai.com/codex/skills/)
