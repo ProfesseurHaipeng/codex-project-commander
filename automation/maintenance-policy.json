@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "allowed_actions": ["add_label", "comment", "report", "close_waiting_issue"],
+  "label_rules": [
+    {"label": "bug", "keywords": ["bug", "error", "broken", "crash"]},
+    {"label": "documentation", "keywords": ["docs", "readme", "documentation"]},
+    {"label": "enhancement", "keywords": ["feature", "request", "enhancement"]},
+    {"label": "question", "keywords": []},
+    {"label": "needs-review", "keywords": []}
+  ],
+  "required_issue_sections": ["reproduction", "environment"],
+  "markers": {"request_details": "oss-maintainer:request-details:v1"},
+  "protected_labels": ["security", "do-not-close"],
+  "max_mutations_per_run": 2,
+  "stale": {
+    "enabled": false,
+    "minimum_days": 30,
+    "required_label": "waiting-for-author",
+    "excluded_labels": ["security", "do-not-close"]
+  },
+  "ai": {"enabled": false, "model": "gpt-5.6"}
+}

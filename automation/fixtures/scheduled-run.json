@@ -1,0 +1,7 @@
+{
+  "delivery_id": "schedule-001",
+  "event_name": "schedule",
+  "action": "scheduled",
+  "repository": {"full_name": "example/oss-project"},
+  "context": {"existing_markers": []}
+}

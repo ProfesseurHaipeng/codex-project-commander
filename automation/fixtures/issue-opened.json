@@ -1,0 +1,14 @@
+{
+  "delivery_id": "issue-opened-001",
+  "event_name": "issues",
+  "action": "opened",
+  "issue": {
+    "number": 12,
+    "title": "Broken example crashes",
+    "body": "The example crashes after startup.",
+    "labels": [],
+    "updated_at": "2026-07-17T00:00:00Z"
+  },
+  "repository": {"full_name": "example/oss-project"},
+  "context": {"existing_markers": []}
+}
