@@ -88,6 +88,20 @@ class PlanningTests(unittest.TestCase):
         self.assertEqual([], plan["actions"])
         self.assertIn("allowed_actions must be a list", plan["notices"])
 
+    def test_nested_object_allowed_action_fails_closed(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["allowed_actions"] = [{}]
+        plan = build_plan(load_json("automation/fixtures/issue-opened.json"), policy, self.now)
+        self.assertEqual([], plan["actions"])
+        self.assertIn("allowed_actions entries must be strings", plan["notices"])
+
+    def test_nested_list_allowed_action_fails_closed(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["allowed_actions"] = [[]]
+        plan = build_plan(load_json("automation/fixtures/issue-opened.json"), policy, self.now)
+        self.assertEqual([], plan["actions"])
+        self.assertIn("allowed_actions entries must be strings", plan["notices"])
+
     def test_non_numeric_failure_count_fails_closed(self):
         event = load_json("automation/fixtures/issue-opened.json")
         event["context"]["failure_count"] = "two"

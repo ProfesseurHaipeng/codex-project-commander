@@ -34,7 +34,9 @@ def validate_policy(policy: dict) -> list[str]:
     if not isinstance(allowed_actions, list):
         return errors + ["allowed_actions must be a list"]
     for action in allowed_actions:
-        if action not in SUPPORTED_ACTIONS:
+        if not isinstance(action, str):
+            errors.append("allowed_actions entries must be strings")
+        elif action not in SUPPORTED_ACTIONS:
             errors.append(f"allowed_actions contains unsupported value: {action}")
     if not isinstance(policy.get("max_mutations_per_run"), int) or policy.get(
         "max_mutations_per_run", 0
