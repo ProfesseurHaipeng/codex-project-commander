@@ -81,6 +81,34 @@ class PlanningTests(unittest.TestCase):
         self.assertEqual([], plan["actions"])
         self.assertTrue(plan["notices"])
 
+    def test_object_allowed_actions_fails_closed(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["allowed_actions"] = {"add_label": True}
+        plan = build_plan(load_json("automation/fixtures/issue-opened.json"), policy, self.now)
+        self.assertEqual([], plan["actions"])
+        self.assertIn("allowed_actions must be a list", plan["notices"])
+
+    def test_non_numeric_failure_count_fails_closed(self):
+        event = load_json("automation/fixtures/issue-opened.json")
+        event["context"]["failure_count"] = "two"
+        plan = build_plan(event, self.policy, self.now)
+        self.assertEqual([], plan["actions"])
+        self.assertIn("event context has invalid failure_count", plan["notices"])
+
+    def test_object_replay_identifier_fails_closed(self):
+        event = load_json("automation/fixtures/issue-opened.json")
+        event["context"]["processed_delivery_ids"] = [{"id": "prior"}]
+        plan = build_plan(event, self.policy, self.now)
+        self.assertEqual([], plan["actions"])
+        self.assertIn("event context has invalid processed_delivery_ids", plan["notices"])
+
+    def test_object_marker_fails_closed(self):
+        event = load_json("automation/fixtures/issue-opened.json")
+        event["context"]["existing_markers"] = [{"marker": "prior"}]
+        plan = build_plan(event, self.policy, self.now)
+        self.assertEqual([], plan["actions"])
+        self.assertIn("event context has invalid existing_markers", plan["notices"])
+
     def test_malformed_issue_returns_no_actions(self):
         event = load_json("automation/fixtures/issue-opened.json")
         event["issue"] = []
@@ -161,6 +189,24 @@ class PlanningTests(unittest.TestCase):
         no_notice_plan = build_plan(event, enabled_policy, self.now)
         self.assertNotIn("close_waiting_issue", [item["type"] for item in no_notice_plan["actions"]])
 
+    def test_report_does_not_consume_the_mutation_budget(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["stale"]["enabled"] = True
+        policy["max_mutations_per_run"] = 1
+        event = {
+            "delivery_id": "stale-report-budget-001",
+            "event_name": "schedule",
+            "issue": {
+                "labels": ["waiting-for-author"],
+                "updated_at": "2026-06-01T00:00:00Z",
+            },
+            "context": {"existing_markers": ["oss-maintainer:waiting-for-author:v1"]},
+        }
+        plan = build_plan(event, policy, self.now)
+        self.assertEqual(
+            ["report", "close_waiting_issue"], [item["type"] for item in plan["actions"]]
+        )
+
 
 class AiBoundaryTests(unittest.TestCase):
     def test_redacts_common_sensitive_patterns(self):
@@ -171,6 +217,15 @@ class AiBoundaryTests(unittest.TestCase):
         redacted = redact_public_text(source)
         self.assertNotIn("person@example.com", redacted)
         self.assertNotIn("sk-example123", redacted)
+        self.assertNotIn("BEGIN PRIVATE KEY", redacted)
+
+    def test_redacts_private_key_crossing_truncation_boundary(self):
+        source = (
+            "x" * 11_970
+            + "-----BEGIN PRIVATE KEY----- secret -----END PRIVATE KEY-----"
+        )
+        redacted = redact_public_text(source)
+        self.assertLessEqual(len(redacted), 12_000)
         self.assertNotIn("BEGIN PRIVATE KEY", redacted)
 
     def test_openai_request_uses_strict_allowlisted_schema(self):
@@ -233,3 +288,28 @@ class AiBoundaryTests(unittest.TestCase):
         self.assertNotIn("person@example.com", captured["payload"])
         self.assertNotIn("sk-example123", captured["payload"])
         self.assertEqual(["add_label", "report"], [item["type"] for item in enriched["actions"]])
+
+    def test_incomplete_response_has_no_enrichment_actions(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["ai"]["enabled"] = True
+        event = load_json("automation/fixtures/issue-opened.json")
+
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def read(self):
+                return b'{"status": "incomplete", "output": [{"content": [{"type": "output_text", "text": "{\\\"label\\\": \\\"bug\\\", \\\"summary\\\": \\\"Do not use.\\\"}"}]}]}'
+
+        enriched = enrich_plan(
+            {"version": 1, "event_key": "test", "actions": [], "notices": []},
+            event,
+            policy,
+            "test-token",
+            lambda request, timeout: Response(),
+        )
+        self.assertEqual([], enriched["actions"])
+        self.assertIn("ai_no_valid_suggestion", enriched["notices"])

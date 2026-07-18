@@ -100,11 +100,17 @@ def build_plan(event: dict, policy: dict, now: datetime) -> dict:
     if not isinstance(context, dict):
         plan["notices"].append("event context must be an object")
         return plan
-    if context.get("failure_count", 0) >= 2:
+    failure_count = context.get("failure_count", 0)
+    if not isinstance(failure_count, int) or isinstance(failure_count, bool):
+        plan["notices"].append("event context has invalid failure_count")
+        return plan
+    if failure_count >= 2:
         plan["notices"].append("stop_loss")
         return plan
     processed_delivery_ids = context.get("processed_delivery_ids", [])
-    if not isinstance(processed_delivery_ids, list):
+    if not isinstance(processed_delivery_ids, list) or not all(
+        isinstance(delivery_id, str) for delivery_id in processed_delivery_ids
+    ):
         plan["notices"].append("event context has invalid processed_delivery_ids")
         return plan
     if event.get("delivery_id") in set(processed_delivery_ids):
@@ -113,7 +119,9 @@ def build_plan(event: dict, policy: dict, now: datetime) -> dict:
 
     event_name = event.get("event_name")
     existing_markers = context.get("existing_markers", [])
-    if not isinstance(existing_markers, list):
+    if not isinstance(existing_markers, list) or not all(
+        isinstance(marker, str) for marker in existing_markers
+    ):
         plan["notices"].append("event context has invalid existing_markers")
         return plan
     markers = set(existing_markers)
@@ -174,7 +182,9 @@ def build_plan(event: dict, policy: dict, now: datetime) -> dict:
                     "reason": "stale_waiting_for_author",
                 }
             )
-    plan["actions"] = plan["actions"][: policy["max_mutations_per_run"]]
+    plan["actions"] = _within_mutation_budget(
+        plan["actions"], policy["max_mutations_per_run"]
+    )
     return plan
 
 
@@ -213,6 +223,18 @@ def _can_close_waiting_issue(
     return (now - updated_at).days >= stale["minimum_days"]
 
 
+def _within_mutation_budget(actions: list[dict], budget: int) -> list[dict]:
+    accepted = []
+    mutation_count = 0
+    for action in actions:
+        if action["type"] in MUTATING_ACTIONS:
+            if mutation_count >= budget:
+                continue
+            mutation_count += 1
+        accepted.append(action)
+    return accepted
+
+
 REDACTION_PATTERNS = (
     (
         re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"),
@@ -230,10 +252,10 @@ REDACTION_PATTERNS = (
 
 
 def redact_public_text(value: str) -> str:
-    redacted = value[:12000]
+    redacted = value
     for pattern, replacement in REDACTION_PATTERNS:
         redacted = pattern.sub(replacement, redacted)
-    return redacted
+    return redacted[:12000]
 
 
 def build_openai_request(
@@ -269,6 +291,8 @@ def build_openai_request(
 
 def parse_openai_result(response: dict) -> dict:
     if not isinstance(response, dict):
+        return {}
+    if "status" in response and response["status"] != "completed":
         return {}
     for item in response.get("output", []):
         if not isinstance(item, dict):
