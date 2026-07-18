@@ -179,7 +179,7 @@ def build_plan(event: dict, policy: dict, now: datetime) -> dict:
             )
     elif event_name == "pull_request":
         pull_request = event.get("pull_request", {})
-        if not isinstance(pull_request, dict):
+        if not _is_valid_public_target(pull_request):
             plan["notices"].append("malformed_pull_request")
             return plan
         labels = _label_names(pull_request.get("labels", []))
@@ -218,6 +218,15 @@ def _label_names(labels: list[object]) -> set[str]:
         for label in labels
         if isinstance(label, str) or (isinstance(label, dict) and isinstance(label.get("name"), str))
     }
+
+
+def _is_valid_public_target(target: object) -> bool:
+    return (
+        isinstance(target, dict)
+        and isinstance(target.get("labels"), list)
+        and isinstance(target.get("title"), str)
+        and isinstance(target.get("body"), str)
+    )
 
 
 def _can_close_waiting_issue(
@@ -287,6 +296,8 @@ def _validate_apply_inputs(plan: dict, target: dict) -> None:
         raise PlanRejected("plan event_key must be a string")
     if "notices" in plan and not isinstance(plan["notices"], list):
         raise PlanRejected("plan notices must be a list")
+    if "protected_label" in plan.get("notices", []):
+        raise PlanRejected("protected plan cannot be applied")
     if not isinstance(target, dict):
         raise PlanRejected("target must be an object")
     repository = target.get("repository")
@@ -372,6 +383,9 @@ def _validate_apply_inputs(plan: dict, target: dict) -> None:
                 and item.get("protected") is False
             ):
                 raise PlanRejected("stale close preconditions failed")
+            raise PlanRejected(
+                "stale close apply is report-only pending live state revalidation"
+            )
 
 
 def _is_canonical_request_details_comment(
@@ -519,6 +533,20 @@ REDACTION_PATTERNS = (
     ),
 )
 
+SENSITIVE_OR_SECURITY_CONTENT = re.compile(
+    r"\b(?:client[_ -]?secret|credential|authorization)\s*[:=]"
+    r"|\bauthorization\s*:\s*bearer\b"
+    r"|\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"
+    r"|\bCVE-\d{4}-\d{4,}\b"
+    r"|\bvulnerabilit(?:y|ies)\b"
+    r"|\bexploit(?:s|ed|ing)?\b",
+    re.IGNORECASE,
+)
+
+
+def contains_sensitive_or_security_content(value: str) -> bool:
+    return bool(SENSITIVE_OR_SECURITY_CONTENT.search(value))
+
 
 def redact_public_text(value: str) -> str:
     redacted = value
@@ -631,13 +659,16 @@ def enrich_plan(
         enriched["notices"].append("ai_malformed_event")
         return enriched
     target = event.get("issue") or event.get("pull_request") or {}
-    if not isinstance(target, dict):
+    if not _is_valid_public_target(target):
         enriched["notices"].append("ai_malformed_event")
         return enriched
     if _label_names(target.get("labels", [])) & set(policy["protected_labels"]):
         enriched["notices"].append("ai_skipped_protected_content")
         return enriched
     source = f"{target.get('title', '')}\n{target.get('body', '')}"
+    if contains_sensitive_or_security_content(source):
+        enriched["notices"].append("ai_skipped_sensitive_content")
+        return enriched
     labels = [rule["label"] for rule in policy["label_rules"]]
     try:
         response = post_openai_response(

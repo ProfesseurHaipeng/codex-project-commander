@@ -9,7 +9,7 @@ Load this reference before editing or auditing OSS-maintenance policy, GitHub Ac
 | Add a label | Allowed | Label exists in `label_rules`; `add_label` is allowlisted; target has no protected-label stop |
 | Post a request-for-details comment | Allowed | `comment` is allowlisted; stable marker is absent; mutation budget remains |
 | Produce a report or release-note draft | Allowed | `report` is allowlisted; output is clearly a draft or artifact, not a published release |
-| Close a waiting-for-author issue | Conditional | `close_waiting_issue` is allowlisted; stale policy is enabled; required label and prior marker exist; minimum age passes; no protected or excluded label |
+| Close a waiting-for-author issue | Report-only | Planning may identify an eligible issue when `close_waiting_issue` is allowlisted and the stale predicates pass. The current apply path rejects closure until it can revalidate live labels, timestamps, and the marker. |
 | Test contributor code | Conditional | Use `pull_request`; read-only token; no repository secrets or write scopes |
 | Label or comment on a fork PR | Conditional | A `pull_request_target` job uses trusted default-branch code only and never imports, sources, checks out, or executes contributor-controlled content |
 | Merge, approve, push, publish a release/package, change settings/permissions, create or use secrets, delete code/branches, enable workflows, submit applications, or send messages | Protected | Never unattended. Complete the exact-effects review in `SKILL.md`, then obtain specific approval for the reviewed set |

@@ -172,6 +172,22 @@ class PlanningTests(unittest.TestCase):
         self.assertEqual([], plan["actions"])
         self.assertIn("malformed_pull_request", plan["notices"])
 
+    def test_incomplete_or_wrongly_typed_pull_request_fails_closed(self):
+        for pull_request in (
+            {},
+            {"labels": "security", "title": "A title", "body": "A body"},
+            {"labels": [], "title": [], "body": "A body"},
+            {"labels": [], "title": "A title", "body": {}},
+        ):
+            with self.subTest(pull_request=pull_request):
+                event = load_json("automation/fixtures/pull-request-opened.json")
+                event["pull_request"] = pull_request
+
+                plan = build_plan(event, self.policy, self.now)
+
+                self.assertEqual([], plan["actions"])
+                self.assertIn("malformed_pull_request", plan["notices"])
+
     def test_protected_pull_request_returns_no_actions(self):
         event = load_json("automation/fixtures/pull-request-opened.json")
         event["pull_request"]["labels"] = ["security"]
@@ -413,6 +429,33 @@ class AiBoundaryTests(unittest.TestCase):
         self.assertEqual(plan["actions"], enriched["actions"])
         self.assertIn("ai_skipped_protected_content", enriched["notices"])
 
+    def test_sensitive_or_security_source_skips_ai_transport_and_actions(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["ai"]["enabled"] = True
+        sensitive_sources = (
+            "client_secret=do-not-send",
+            "credential=do-not-send",
+            "Authorization: Bearer do-not-send",
+            "AWS key AKIAIOSFODNN7EXAMPLE",
+            "AWS temporary key ASIAIOSFODNN7EXAMPLE",
+            "CVE-2026-12345 details",
+            "possible vulnerability in parser",
+            "exploit steps attached",
+        )
+        for source in sensitive_sources:
+            with self.subTest(source=source):
+                event = load_json("automation/fixtures/issue-opened.json")
+                event["issue"]["body"] = source
+                plan = {"version": 1, "event_key": "sensitive-001", "actions": [], "notices": []}
+
+                def transport(request, timeout):
+                    self.fail("sensitive or security content must not be sent to OpenAI")
+
+                enriched = enrich_plan(plan, event, policy, "test-token", transport)
+
+                self.assertEqual(plan["actions"], enriched["actions"])
+                self.assertIn("ai_skipped_sensitive_content", enriched["notices"])
+
 
 def valid_apply_plan(*actions: dict) -> dict:
     return {
@@ -636,7 +679,17 @@ class ApplyPlanTests(unittest.TestCase):
 
         self.assertEqual([], client.calls)
 
-    def test_valid_close_calls_issue_close_once(self):
+    def test_protected_plan_notice_rejected_before_any_client_call(self):
+        client = FakeGitHubClient()
+        plan = valid_apply_plan({"type": "add_label", "label": "bug"})
+        plan["notices"] = ["protected_label"]
+
+        with self.assertRaisesRegex(PlanRejected, "protected plan cannot be applied"):
+            apply_plan(plan, client, valid_apply_target())
+
+        self.assertEqual([], client.calls)
+
+    def test_close_is_report_only_without_live_state_revalidation(self):
         client = FakeGitHubClient()
         plan = valid_apply_plan(
             {
@@ -647,10 +700,10 @@ class ApplyPlanTests(unittest.TestCase):
             }
         )
 
-        results = apply_plan(plan, client, valid_apply_target())
+        with self.assertRaisesRegex(PlanRejected, "stale close apply is report-only"):
+            apply_plan(plan, client, valid_apply_target())
 
-        self.assertEqual([("close_issue", "owner/repository", 17)], client.calls)
-        self.assertEqual([{"type": "close_waiting_issue", "status": "applied"}], results)
+        self.assertEqual([], client.calls)
 
     def test_malformed_plan_is_rejected_before_client_call(self):
         client = FakeGitHubClient()
