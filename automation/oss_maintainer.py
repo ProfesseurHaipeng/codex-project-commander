@@ -40,9 +40,11 @@ def validate_policy(policy: dict) -> list[str]:
             errors.append("allowed_actions entries must be strings")
         elif action not in SUPPORTED_ACTIONS:
             errors.append(f"allowed_actions contains unsupported value: {action}")
-    if not isinstance(policy.get("max_mutations_per_run"), int) or policy.get(
-        "max_mutations_per_run", 0
-    ) < 1:
+    if (
+        not isinstance(policy.get("max_mutations_per_run"), int)
+        or isinstance(policy.get("max_mutations_per_run"), bool)
+        or policy.get("max_mutations_per_run", 0) < 1
+    ):
         errors.append("max_mutations_per_run must be at least 1")
     label_rules = policy.get("label_rules")
     if not isinstance(label_rules, list) or any(
@@ -72,6 +74,7 @@ def validate_policy(policy: dict) -> list[str]:
     elif (
         not isinstance(stale["enabled"], bool)
         or not isinstance(stale["minimum_days"], int)
+        or isinstance(stale["minimum_days"], bool)
         or stale["minimum_days"] < 0
         or not isinstance(stale["required_label"], str)
         or not isinstance(stale["excluded_labels"], list)
@@ -300,6 +303,8 @@ def _validate_apply_inputs(plan: dict, target: dict) -> None:
     action_types = [
         item.get("type") if isinstance(item, dict) else None for item in actions
     ]
+    if any(not isinstance(action_type, str) for action_type in action_types):
+        raise PlanRejected("action type must be a string")
     policy_allowed = set(allowed_actions)
     unknown = [
         action_type

@@ -45,6 +45,16 @@ class PolicyTests(unittest.TestCase):
         policy["stale"] = {"enabled": False}
         self.assertTrue(validate_policy(policy))
 
+    def test_rejects_boolean_max_mutations(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["max_mutations_per_run"] = True
+        self.assertIn("max_mutations_per_run must be at least 1", validate_policy(policy))
+
+    def test_rejects_boolean_stale_minimum_days(self):
+        policy = load_json("automation/maintenance-policy.json")
+        policy["stale"]["minimum_days"] = False
+        self.assertIn("stale policy has invalid values", validate_policy(policy))
+
 
 class PlanningTests(unittest.TestCase):
     def setUp(self):
@@ -428,6 +438,20 @@ class ApplyPlanTests(unittest.TestCase):
             apply_plan(plan, client, valid_apply_target())
 
         self.assertEqual([], client.calls)
+
+    def test_non_string_action_types_are_rejected_before_any_client_call(self):
+        for action_type in ([], {}):
+            with self.subTest(action_type=action_type):
+                client = FakeGitHubClient()
+
+                with self.assertRaisesRegex(PlanRejected, "action type must be a string"):
+                    apply_plan(
+                        valid_apply_plan({"type": action_type}),
+                        client,
+                        valid_apply_target(),
+                    )
+
+                self.assertEqual([], client.calls)
 
     def test_disallowed_action_rejected_before_any_client_call(self):
         client = FakeGitHubClient()
