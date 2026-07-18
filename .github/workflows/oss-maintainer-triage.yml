@@ -1,0 +1,45 @@
+name: OSS Maintainer Issue Triage
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions: {}
+
+jobs:
+  triage:
+    permissions:
+      contents: read
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Plan issue actions
+        run: >-
+          python3 automation/oss_maintainer.py plan
+          --event "$GITHUB_EVENT_PATH"
+          --event-name issues
+          --policy automation/maintenance-policy.json
+          --now "${{ github.event.issue.updated_at }}"
+          --output "$RUNNER_TEMP/issue-plan.json"
+      - name: Optionally enrich the deterministic plan
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: >-
+          python3 automation/oss_maintainer.py enrich
+          --plan "$RUNNER_TEMP/issue-plan.json"
+          --event "$GITHUB_EVENT_PATH"
+          --policy automation/maintenance-policy.json
+          --output "$RUNNER_TEMP/issue-plan-enriched.json"
+      - name: Apply allowlisted issue actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 automation/oss_maintainer.py apply
+          --plan "$RUNNER_TEMP/issue-plan-enriched.json"
+          --policy automation/maintenance-policy.json
+          --repository "$GITHUB_REPOSITORY"
+          --target-number "${{ github.event.issue.number }}"

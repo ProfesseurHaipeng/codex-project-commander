@@ -1,0 +1,13 @@
+{
+  "delivery_id": "pull-request-opened-001",
+  "event_name": "pull_request",
+  "action": "opened",
+  "pull_request": {
+    "number": 34,
+    "title": "Improve docs",
+    "body": "Adds an installation example.",
+    "labels": []
+  },
+  "repository": {"full_name": "example/oss-project"},
+  "context": {"existing_markers": []}
+}

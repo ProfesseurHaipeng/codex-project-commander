@@ -1,0 +1,4 @@
+interface:
+  display_name: "Automate OSS Maintenance"
+  short_description: "Policy-bound GitHub maintenance for OSS repositories"
+  default_prompt: "Use $automate-oss-maintenance to configure or audit safe GitHub maintenance automation for this repository."
