@@ -1,0 +1,4 @@
+interface:
+  display_name: "自动化开源维护"
+  short_description: "按策略维护 GitHub Issue、PR 与发布流程"
+  default_prompt: "使用 $automate-oss-maintenance-zh 配置或审计此仓库的安全 GitHub 维护自动化。"
